@@ -59,7 +59,7 @@ const ClassListPage = () => {
       <td className="hidden md:table-cell">{item.time}</td>
       <td>
         <div className="flex items-center gap-2">
-          <Link href={`/list/classes/${item.id}`}>
+          <Link href={`/list/classes/${item.name}`}>
             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
               <Image src="/view.png" alt="" width={16} height={16} />
             </button>
