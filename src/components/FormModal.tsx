@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useState } from 'react';
+import ClassForm from './forms/ClassForm';
 import LessonForm from './forms/LessonForm';
 
 // USE LAZY LOADING
@@ -22,7 +23,7 @@ const forms: {
 } = {
   teacher: (type, data) => <TeacherForm type={type} data={data} />,
   student: (type, data) => <StudentForm type={type} data={data} />,
-  class: (type, data) => <StudentForm type={type} data={data} />,
+  class: (type, data) => <ClassForm type={type} data={data} />,
   lesson: (type, data) => <LessonForm type={type} data={data} />,
 };
 

@@ -1,11 +1,19 @@
+'use client';
+
 import Announcements from '@/components/Announcements';
 import BigCalendar from '@/components/BigCalender';
+import FormModal from '@/components/FormModal';
+import { role } from '@/lib/data';
 // import BigCalendar from '@/components/BigCalender';
 // import Performance from '@/components/Performance';
 import Image from 'next/image';
 import Link from 'next/link';
 
 const SingleStudentPage = () => {
+  const handleEditStudent: any = () => {
+    console.log('Edit Student');
+  };
+
   return (
     <div className="flex-1 p-4 flex flex-col gap-4 xl:flex-row">
       {/* LEFT */}
@@ -25,6 +33,21 @@ const SingleStudentPage = () => {
             </div>
             <div className="w-2/3 flex flex-col justify-between gap-4">
               <h1 className="text-xl font-semibold">Cameron Moran</h1>
+              {/* <button
+                className="py-2 px-4 rounded-md bg-slate-200 text-xs font-semibold"
+                onClick={handleEditStudent}
+              >
+                Edit Student Info
+              </button> */}
+              <div className="bg-black w-fit">
+                {role === 'admin' && (
+                  // <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                  //   <Image src="/plus.png" alt="" width={14} height={14} />
+                  // </button>
+                  <FormModal table="student" type="update" />
+                )}
+              </div>
+
               <p className="text-sm text-gray-500">
                 Lorem ipsum, dolor sit amet consectetur adipisicing elit.
               </p>
