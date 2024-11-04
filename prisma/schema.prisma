@@ -19,9 +19,10 @@ model Student {
   surname     String
   email       String?      @unique
   phone       String?      @unique
-  address     String
+  address     String  
   img         String?
   bloodType   String
+  photo       String     @default("/avatar.png")
   sex         UserSex
   createdAt   DateTime     @default(now())
   parentId    String
@@ -101,7 +102,6 @@ model Lesson {
   day       Day
   startTime DateTime
   endTime   DateTime
-
   subjectId   Int
   subject     Subject      @relation(fields: [subjectId], references: [id])
   classId     Int
