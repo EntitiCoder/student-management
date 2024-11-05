@@ -67,28 +67,28 @@ const StudentListPage = async ({ searchParams }: Props) => {
 
   const query: Prisma.StudentWhereInput = {};
 
-  if (queryParams) {
-    for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
-        switch (key) {
-          case 'teacherId':
-            query.class = {
-              lessons: {
-                some: {
-                  teacherId: value,
-                },
-              },
-            };
-            break;
-          case 'search':
-            query.name = { contains: value, mode: 'insensitive' };
-            break;
-          default:
-            break;
-        }
-      }
-    }
-  }
+  // if (queryParams) {
+  //   for (const [key, value] of Object.entries(queryParams)) {
+  //     if (value !== undefined) {
+  //       switch (key) {
+  //         case 'teacherId':
+  //           query.class = {
+  //             lessons: {
+  //               some: {
+  //                 teacherId: value,
+  //               },
+  //             },
+  //           };
+  //           break;
+  //         case 'search':
+  //           query.name = { contains: value, mode: 'insensitive' };
+  //           break;
+  //         default:
+  //           break;
+  //       }
+  //     }
+  //   }
+  // }
 
   const [data, count] = await prisma.$transaction([
     prisma.student.findMany({
@@ -101,7 +101,6 @@ const StudentListPage = async ({ searchParams }: Props) => {
     }),
     prisma.student.count({ where: query }),
   ]);
-  console.log('🚀 ~ file: page.tsx:103 ~ StudentListPage ~ count:', count);
 
   const renderRow = (item: StudentList) => (
     <tr
