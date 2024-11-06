@@ -5,8 +5,8 @@ export const classSchema = z.object({
   name: z.string().min(1, { message: 'Subject name is required!' }),
   capacity: z.coerce.number().min(1, { message: 'Capacity name is required!' }),
   gradeId: z.coerce.number().min(1, { message: 'Grade name is required!' }),
-  time: z.string().min(1, { message: 'Time name is required!' }),
-  //   supervisorId: z.coerce.string().optional(),
+  // time: z.string().min(1, { message: 'Time name is required!' }),
+  // supervisorId: z.coerce.string().optional(),
 });
 
 export type ClassSchema = z.infer<typeof classSchema>;

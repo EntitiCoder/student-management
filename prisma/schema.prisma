@@ -69,7 +69,6 @@ model Parent {
 model Grade {
   id    Int @id @default(autoincrement())
   level Int @unique
-
   students Student[]
   classess Class[]
 }
@@ -78,13 +77,12 @@ model Class {
   id       Int    @id @default(autoincrement())
   name     String @unique
   capacity Int
-
   supervisorId  String?
   supervisor    Teacher?       @relation(fields: [supervisorId], references: [id])
   lessons       Lesson[]
   students      Student[]
   gradeId       Int
-  grade         Grade          @relation(fields: [gradeId], references: [id])
+  grade         Grade?          @relation(fields: [gradeId], references: [id])
   events        Event[]
   announcements Announcement[]
 }
