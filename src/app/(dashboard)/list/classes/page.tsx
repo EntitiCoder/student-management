@@ -101,12 +101,12 @@ const ClassListPage = async ({ searchParams }: Props) => {
     >
       <td className="flex items-center gap-4 p-4">{item.name}</td>
       <td className="hidden md:table-cell">{item.capacity}</td>
-      <td className="hidden md:table-cell">{item.grade.id}</td>
+      {/* <td className="hidden md:table-cell">{item}</td> */}
       {/* <td className="hidden md:table-cell">{item.supervisor.name}</td> */}
       <td className="hidden md:table-cell">{item.time}</td>
       <td>
         <div className="flex items-center gap-2">
-          <Link href={`/list/classes/${item.name}`}>
+          <Link href={`/list/classes/${item.id}`}>
             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
               <Image src="/view.png" alt="" width={16} height={16} />
             </button>
@@ -136,7 +136,7 @@ const ClassListPage = async ({ searchParams }: Props) => {
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {role === 'admin' &&  <FormContainer table="class" type="create"  />}
+            {role === 'admin' && <FormContainer table="class" type="create" />}
           </div>
         </div>
       </div>

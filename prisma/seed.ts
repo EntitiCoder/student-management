@@ -145,6 +145,18 @@ async function main() {
     });
   }
 
+  for (let i = 1; i <= 10; i++) {
+    await prisma.post.create({
+      data: {
+        title: `Post ${i}`,
+        description: `Description for Post ${i}`,
+        pathToMoney: `Path to Money ${i}`,
+        mockupImages: `Mockup Images ${i}`,
+        classId: (i % 5) + 1,
+      },
+    });
+  }
+
   // ASSIGNMENT
   for (let i = 1; i <= 10; i++) {
     await prisma.assignment.create({

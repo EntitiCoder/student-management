@@ -1,13 +1,70 @@
 import Announcements from '@/components/Announcements';
 // import BigCalendar from '@/components/BigCalender';
 // import Performance from '@/components/Performance';
+import FormPostContainer from '@/components/FormPostContainer';
+import Table from '@/components/Table';
+import prisma from '@/lib/prisma';
+import { currentUser } from '@clerk/nextjs/server';
+import { Post } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
-import LessonListPage from '../../lessons/page';
 
-const SingleClassPage = () => {
+const columns = [
+  {
+    header: 'Title',
+    accessor: 'title',
+  },
+  {
+    header: 'Description',
+    accessor: 'description',
+  },
+  // Link
+  {
+    header: 'Mockup Images',
+    accessor: 'mockupImages',
+  },
+];
+
+const SingleClassPage = async ({ params }) => {
+  const user = await currentUser();
+  const role = user?.publicMetadata.role as string;
+  const classId = Number(params.id);
+  // By ID
+  const classData = await prisma.class?.findUnique({
+    where: {
+      id: classId,
+    },
+    include: {
+      grade: true,
+      posts: true,
+    },
+  });
+
+  const renderRow = (item: Post) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight "
+    >
+      <td className="flex items-center gap-4 p-4">{item.title}</td>
+      <td className="">{item.description}</td>
+      <td className="">
+        <Link href={item.mockupImages}>{item.mockupImages}</Link>
+      </td>
+      <td>
+        <div className="flex items-center gap-2">
+          {role === 'admin' && (
+            <>
+              <FormPostContainer type="update" id={item.id} classId={classId} />
+              {/* <FormContainer table="announcement" type="delete" id={item.id} /> */}
+            </>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+
   return (
-    <div className="flex-1 p-4 flex flex-col gap-4 xl:flex-row">
+    <div className="fle x-1 p-4 flex flex-col gap-4 xl:flex-row">
       {/* LEFT */}
       <div className="w-full xl:w-2/3">
         {/* TOP */}
@@ -23,9 +80,12 @@ const SingleClassPage = () => {
                 className="w-36 h-36 rounded-full object-cover"
               />
             </div>
+            {/* <CldUploadButton uploadPreset="school-management-preset" /> */}
             <div className="w-2/3 flex flex-col justify-between gap-4">
-              <h1 className="text-xl font-semibold">Class 1A</h1>
+              <h1 className="text-xl font-semibold">{classData?.name}</h1>
               <p className="text-sm text-gray-500">
+                Capacity: {classData?.capacity}
+                <br />
                 Lorem ipsum, dolor sit amet consectetur adipisicing elit.
               </p>
               <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
@@ -108,11 +168,11 @@ const SingleClassPage = () => {
             </div>
           </div>
         </div>
-        {/* BOTTOM */}
-        <div className="mt-4 bg-white rounded-md p-4 h-[800px]">
-          <LessonListPage />
-          {/* <BigCalendar /> */}
-        </div>
+        <Table
+          columns={columns}
+          renderRow={renderRow}
+          data={classData?.posts}
+        />
       </div>
       {/* RIGHT */}
       <div className="w-full xl:w-1/3 flex flex-col gap-4">

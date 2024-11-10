@@ -13,10 +13,10 @@ const menuItems = [
         visible: ['admin', 'teacher', 'student', 'parent'],
       },
       // {
-      //   icon: "/teacher.png",
-      //   label: "Teachers",
-      //   href: "/list/teachers",
-      //   visible: ["admin", "teacher"],
+      //   icon: '/teacher.png',
+      //   label: 'Teachers',
+      //   href: '/list/teachers',
+      //   visible: ['admin', 'teacher'],
       // },
       {
         icon: '/class.png',
