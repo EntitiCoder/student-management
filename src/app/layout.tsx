@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Student Management Class',
   description: 'Next.js Student Management System',
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 export default function RootLayout({

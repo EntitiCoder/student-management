@@ -46,7 +46,7 @@ const StudentForm = ({
 
   const onSubmit = handleSubmit((data) => {
     console.log('hello');
-    console.log(data);
+    // console.log(data);
     formAction({ ...data, img: img?.secure_url });
   });
 

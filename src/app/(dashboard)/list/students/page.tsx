@@ -63,7 +63,6 @@ interface Props {
 const StudentListPage = async ({ searchParams }: Props) => {
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
-  console.log('🚀 ~ file: page.tsx:66 ~ StudentListPage ~ p:', p);
 
   const query: Prisma.StudentWhereInput = {};
 

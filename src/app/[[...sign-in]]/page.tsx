@@ -13,7 +13,6 @@ export default function SignInPage() {
 
   useEffect(() => {
     const role = user?.publicMetadata.role;
-    console.log('🚀 ~ file: page.tsx:20 ~ useEffect ~ role:', role);
     if (role) {
       router.push(`/${role}`);
     }
