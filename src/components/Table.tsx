@@ -18,7 +18,7 @@ const Table = ({
           ))}
         </tr>
       </thead>
-      <tbody>{data.map((item) => renderRow(item))}</tbody>
+      <tbody>{data?.map((item) => renderRow(item))}</tbody>
     </table>
   );
 };

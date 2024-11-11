@@ -150,9 +150,14 @@ async function main() {
       data: {
         title: `Post ${i}`,
         description: `Description for Post ${i}`,
-        pathToMoney: `Path to Money ${i}`,
-        mockupImages: `Mockup Images ${i}`,
-        classId: (i % 5) + 1,
+        media: {
+          create: {
+            url: `https://picsum.photos/200/300?random=${i}`,
+            type: 'image/jpeg',
+            fileName: `image${i}.jpg`,
+          },
+        },
+        classId: (i % 6) + 1,
       },
     });
   }

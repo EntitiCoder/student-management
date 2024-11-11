@@ -3,11 +3,19 @@ import Announcements from '@/components/Announcements';
 // import Performance from '@/components/Performance';
 import FormPostContainer from '@/components/FormPostContainer';
 import Table from '@/components/Table';
+import TableSearch from '@/components/TableSearch';
 import prisma from '@/lib/prisma';
 import { currentUser } from '@clerk/nextjs/server';
-import { Post } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
+
+type Post = {
+  id: number;
+  title: string;
+  description: string;
+  classId: number;
+  media: any[];
+};
 
 const columns = [
   {
@@ -20,12 +28,12 @@ const columns = [
   },
   // Link
   {
-    header: 'Mockup Images',
-    accessor: 'mockupImages',
+    header: 'Content',
+    accessor: 'media',
   },
 ];
 
-const SingleClassPage = async ({ params }) => {
+const SingleClassPage = async ({ params }: any) => {
   const user = await currentUser();
   const role = user?.publicMetadata.role as string;
   const classId = Number(params.id);
@@ -36,9 +44,26 @@ const SingleClassPage = async ({ params }) => {
     },
     include: {
       grade: true,
-      posts: true,
+      posts: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          media: {
+            select: {
+              url: true,
+              fileName: true,
+              // type: true,
+            },
+          },
+        },
+      },
     },
   });
+  console.log(
+    '🚀 ~ file: page.tsx:46 ~ SingleClassPage ~ classData:',
+    classData
+  );
 
   const renderRow = (item: Post) => (
     <tr
@@ -48,14 +73,24 @@ const SingleClassPage = async ({ params }) => {
       <td className="flex items-center gap-4 p-4">{item.title}</td>
       <td className="">{item.description}</td>
       <td className="">
-        <Link href={item.mockupImages}>{item.mockupImages}</Link>
+        <Link
+          href={item?.media[0]?.url}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          {item?.media[0]?.fileName}
+        </Link>
       </td>
       <td>
         <div className="flex items-center gap-2">
           {role === 'admin' && (
             <>
-              <FormPostContainer type="update" id={item.id} classId={classId} />
-              {/* <FormContainer table="announcement" type="delete" id={item.id} /> */}
+              <FormPostContainer
+                data={item}
+                type="update"
+                id={item.id}
+                classId={classId}
+              />
             </>
           )}
         </div>
@@ -168,6 +203,32 @@ const SingleClassPage = async ({ params }) => {
             </div>
           </div>
         </div>
+        <div className="flex items-center justify-between mt-4">
+          <h1 className="hidden md:block text-lg font-semibold">All Posts</h1>
+          <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+            <TableSearch />
+            <div className="flex items-center gap-4 self-end">
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/filter.png" alt="" width={14} height={14} />
+              </button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                <Image src="/sort.png" alt="" width={14} height={14} />
+              </button>
+              {role === 'admin' && (
+                <FormPostContainer
+                  // data={item}
+                  type="create"
+                  classId={classId}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+        {/* <FormPostContainer
+          // data={item}
+          type="create"
+          classId={classId}
+        /> */}
         <Table
           columns={columns}
           renderRow={renderRow}
