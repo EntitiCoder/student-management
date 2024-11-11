@@ -2,9 +2,10 @@
 
 import { v2 as cloudinary } from 'cloudinary';
 
+import { clerkClient } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { ClassSchema } from './formValidationSchemas';
+import { ClassSchema, StudentSchema } from './formValidationSchemas';
 import prisma from './prisma';
 
 // Require the cloudinary library
@@ -21,9 +22,62 @@ console.log(cloudinary.config());
 
 type CurrentState = { success: boolean; error: boolean };
 
-export const createStudent = async (data: any) => {
-  console.log('createStudent');
-  console.log(data);
+// export const createStudent = async (data: any) => {
+//   console.log('createStudent');
+//   console.log(data);
+// };
+
+export const createStudent = async (
+  currentState: CurrentState,
+  data: StudentSchema
+) => {
+  console.log('student');
+  try {
+    const classItem = await prisma.class.findUnique({
+      where: { id: data.classId },
+      include: { _count: { select: { students: true } } },
+    });
+
+    if (classItem && classItem.capacity === classItem._count.students) {
+      return { success: false, error: true };
+    }
+
+    const clerk = await clerkClient();
+    const user = await clerk.users.createUser({
+      username: data.username,
+      password: data.password,
+      firstName: data.name,
+      lastName: data.surname,
+      publicMetadata: { role: 'student' },
+    });
+
+    console.log('🚀 ~ file: actions.ts:52 ~ user:', user);
+
+    await prisma.student.create({
+      data: {
+        id: user.id,
+        username: data.username,
+        name: data.name,
+        surname: data.surname,
+        email: data.email || null,
+        phone: data.phone || null,
+        address: data.address,
+        img: data.img || null,
+        bloodType: data.bloodType,
+        sex: data.sex,
+        birthday: data.birthday,
+        gradeId: data.gradeId,
+        classId: data.classId,
+        parentId: data.parentId,
+      },
+    });
+
+    // revalidatePath("/list/students");
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
 };
 
 export const updateStudent = async (data: any) => {
@@ -121,7 +175,6 @@ export async function createPost(formData: FormData) {
 export async function updatePost(formData: FormData) {
   const file = formData.get('media') as File;
   const { url, type, fileName } = await saveFile(file);
-  console.log('🚀 ~ file: actions.ts:116 ~ updatePost ~ fileName:', fileName);
 
   const { title, description, media, classId } = FormSchema.parse({
     classId: Number(formData.get('classId')),
@@ -178,7 +231,7 @@ async function saveFile(file: File) {
       cloudinary.uploader
         .upload_stream(
           {
-            resource_type: 'auto',
+            resource_type: file.type === MediaType.IMAGE ? 'image' : 'raw',
           },
           function (error, result) {
             if (error || result === undefined) {

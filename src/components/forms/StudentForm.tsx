@@ -1,19 +1,14 @@
 'use client';
 
-import {
-  createStudent,
-  // createTeacher,
-  updateStudent,
-} from '@/lib/actions';
+import { createStudent } from '@/lib/actions';
 import { studentSchema, StudentSchema } from '@/lib/formValidationSchemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import InputField from '../InputField';
-// import { useRouter } from "next/navigation";
-// import { toast } from "react-toastify";
-// import { CldUploadWidget } from "next-cloudinary";
 
 const StudentForm = ({
   type,
@@ -37,7 +32,7 @@ const StudentForm = ({
   const [img, setImg] = useState<any>();
 
   const [state, formAction] = useFormState(
-    type === 'create' ? createStudent : updateStudent,
+    type === 'create' ? createStudent : createStudent,
     {
       success: false,
       error: false,
@@ -46,21 +41,21 @@ const StudentForm = ({
 
   const onSubmit = handleSubmit((data) => {
     console.log('hello');
-    // console.log(data);
+    console.log(data);
     formAction({ ...data, img: img?.secure_url });
   });
 
-  // const router = useRouter();
+  const router = useRouter();
 
-  // useEffect(() => {
-  //   if (state.success) {
-  //     toast(`Student has been ${type === "create" ? "created" : "updated"}!`);
-  //     setOpen(false);
-  //     router.refresh();
-  //   }
-  // }, [state, router, type, setOpen]);
+  useEffect(() => {
+    if (state.success) {
+      toast(`Student has been ${type === 'create' ? 'created' : 'updated'}!`);
+      setOpen(false);
+      router.refresh();
+    }
+  }, [state, router, type, setOpen]);
 
-  // const { grades, classes } = relatedData;
+  const { grades, classes } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -193,7 +188,7 @@ const StudentForm = ({
             </p>
           )}
         </div>
-        {/* <div className="flex flex-col gap-2 w-full md:w-1/4">
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Grade</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
@@ -211,8 +206,8 @@ const StudentForm = ({
               {errors.gradeId.message.toString()}
             </p>
           )}
-        </div> */}
-        {/* <div className="flex flex-col gap-2 w-full md:w-1/4">
+        </div>
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Class</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
@@ -239,7 +234,7 @@ const StudentForm = ({
               {errors.classId.message.toString()}
             </p>
           )}
-        </div> */}
+        </div>
       </div>
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
