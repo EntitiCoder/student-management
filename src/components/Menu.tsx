@@ -7,6 +7,7 @@ const menuItems = [
     title: 'MENU',
     items: [
       {
+        key: 'home',
         icon: '/home.png',
         label: 'Home',
         href: '/',
@@ -19,12 +20,21 @@ const menuItems = [
       //   visible: ['admin', 'teacher'],
       // },
       {
+        key: 'classes',
         icon: '/class.png',
         label: 'Classes',
         href: '/list/classes',
         visible: ['admin', 'teacher'],
       },
+      // {
+      //   key: 'myClass',
+      //   icon: '/class.png',
+      //   label: 'My Class',
+      //   href: '/list/classes',
+      //   visible: ['student'],
+      // },
       {
+        key: 'students',
         icon: '/student.png',
         label: 'Students',
         href: '/list/students',
@@ -119,6 +129,7 @@ const menuItems = [
 
 const Menu = async () => {
   const user = await currentUser();
+  console.log('🚀 ~ file: Menu.tsx:132 ~ Menu ~ user:', user);
   const role = user?.publicMetadata.role as string;
 
   return (

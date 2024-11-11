@@ -14,12 +14,14 @@ export default function SignInPage() {
   useEffect(() => {
     const role = user?.publicMetadata.role;
     if (role) {
-      router.push(`/${role}`);
+      if (role === 'student') router.push(`/list/students/${user.id}`);
+      else if (role === 'admin') router.push(`/list/classes`);
+      else router.push('/list/classes');
     }
   }, [user, router]);
 
   return (
-    <div className="grid w-full flex-grow items-center bg-zinc-100 px-4 sm:justify-center">
+    <div className="h-screen flex items-center justify-center bg-lamaSkyLight">
       <SignIn.Root>
         <SignIn.Step
           name="start"

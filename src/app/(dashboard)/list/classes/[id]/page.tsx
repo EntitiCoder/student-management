@@ -1,4 +1,3 @@
-import Announcements from '@/components/Announcements';
 // import BigCalendar from '@/components/BigCalender';
 // import Performance from '@/components/Performance';
 import FormPostContainer from '@/components/FormPostContainer';
@@ -8,6 +7,7 @@ import prisma from '@/lib/prisma';
 import { currentUser } from '@clerk/nextjs/server';
 import Image from 'next/image';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 type Post = {
   id: number;
@@ -60,10 +60,15 @@ const SingleClassPage = async ({ params }: any) => {
       },
     },
   });
-  console.log(
-    '🚀 ~ file: page.tsx:46 ~ SingleClassPage ~ classData:',
-    classData
-  );
+  const studentData = await prisma.student.findUnique({
+    where: { id: user?.id },
+    select: { classId: true },
+  });
+
+  if (!studentData || studentData.classId !== Number(params.id)) {
+    // toast.error('You are not allowed to view this class');
+    return notFound();
+  }
 
   const renderRow = (item: Post) => (
     <tr
@@ -123,7 +128,7 @@ const SingleClassPage = async ({ params }: any) => {
                 <br />
                 Lorem ipsum, dolor sit amet consectetur adipisicing elit.
               </p>
-              <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
+              {/* <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image src="/blood.png" alt="" width={14} height={14} />
                   <span>A+</span>
@@ -140,7 +145,7 @@ const SingleClassPage = async ({ params }: any) => {
                   <Image src="/phone.png" alt="" width={14} height={14} />
                   <span>+1 234 567</span>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           {/* SMALL CARDS */}
@@ -236,7 +241,7 @@ const SingleClassPage = async ({ params }: any) => {
         />
       </div>
       {/* RIGHT */}
-      <div className="w-full xl:w-1/3 flex flex-col gap-4">
+      {/* <div className="w-full xl:w-1/3 flex flex-col gap-4">
         <div className="bg-white p-4 rounded-md">
           <h1 className="text-xl font-semibold">Shortcuts</h1>
           <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-500">
@@ -257,9 +262,8 @@ const SingleClassPage = async ({ params }: any) => {
             </Link>
           </div>
         </div>
-        {/* <Performance /> */}
         <Announcements />
-      </div>
+      </div> */}
     </div>
   );
 };
