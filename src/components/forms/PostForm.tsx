@@ -14,6 +14,7 @@ export default function PostForm({
   setOpen: any;
 }) {
   console.log('🚀 ~ file: PostForm.tsx:15 ~ data:', data);
+
   return (
     <form action={type == 'create' ? createPost : updatePost}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
@@ -27,7 +28,7 @@ export default function PostForm({
             id="title"
             name="title"
             type="text"
-            placeholder="New project idea here..."
+            placeholder="Title Post"
             className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
             required
             defaultValue={data?.title}
@@ -43,7 +44,7 @@ export default function PostForm({
           <textarea
             id="description"
             name="description"
-            placeholder="Add a description that includes the core features and workings of the project"
+            placeholder="Description"
             className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
             required
             defaultValue={data?.description}
@@ -65,12 +66,6 @@ export default function PostForm({
         </div>
       </div>
       <div className="mt-6 flex justify-end gap-4">
-        {/* <Link
-          href="/"
-          className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
-        >
-          Cancel
-        </Link> */}
         <button type="button" onClick={() => setOpen(false)}>
           Cancel
         </button>

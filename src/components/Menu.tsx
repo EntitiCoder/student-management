@@ -106,6 +106,7 @@ const menuItems = [
     title: 'OTHER',
     items: [
       {
+        key: 'profile',
         icon: '/profile.png',
         label: 'Profile',
         href: '/profile',
@@ -132,6 +133,15 @@ const Menu = async () => {
   console.log('🚀 ~ file: Menu.tsx:132 ~ Menu ~ user:', user);
   const role = user?.publicMetadata.role as string;
 
+  const renderLink = (menuItem: any) => {
+    switch (menuItem.key) {
+      case 'profile':
+        return `/list/students/${user?.id}`;
+      default:
+        return menuItem.href;
+    }
+  };
+
   return (
     <div className="mt-4 text-sm">
       {menuItems.map((i) => (
@@ -143,7 +153,7 @@ const Menu = async () => {
             if (item.visible.includes(role)) {
               return (
                 <Link
-                  href={item.href}
+                  href={renderLink(item)}
                   key={item.label}
                   className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-2 md:px-2 rounded-md hover:bg-lamaSkyLight"
                 >
