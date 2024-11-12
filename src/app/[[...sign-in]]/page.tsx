@@ -10,9 +10,9 @@ export default function SignInPage() {
   const { isLoaded, isSignedIn, user } = useUser();
 
   const router = useRouter();
+  const role = user?.publicMetadata.role;
 
   useEffect(() => {
-    const role = user?.publicMetadata.role;
     if (role) {
       if (role === 'student') router.push(`/list/students/${user.id}`);
       else if (role === 'admin') router.push(`/list/classes`);
