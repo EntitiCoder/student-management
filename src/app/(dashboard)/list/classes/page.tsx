@@ -55,6 +55,7 @@ const ClassListPage = async ({ searchParams }: Props) => {
       accessor: 'action',
     },
   ];
+
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
   // URL PARAMS CONDITION
