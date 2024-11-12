@@ -18,37 +18,6 @@ type Class = {
   time: string;
 };
 
-const columns = [
-  {
-    header: 'Class Name',
-    accessor: 'name',
-  },
-  {
-    header: 'Capacity',
-    accessor: 'capacity',
-    className: 'hidden md:table-cell',
-  },
-  {
-    header: 'Grade',
-    accessor: 'grade',
-    className: 'hidden md:table-cell',
-  },
-  {
-    header: 'Supervisor',
-    accessor: 'supervisor',
-    className: 'hidden md:table-cell',
-  },
-  {
-    header: 'Time',
-    accessor: 'time',
-    className: 'hidden md:table-cell',
-  },
-  {
-    header: 'Actions',
-    accessor: 'action',
-  },
-];
-
 interface Props {
   searchParams: {
     page: string;
@@ -56,6 +25,36 @@ interface Props {
 }
 
 const ClassListPage = async ({ searchParams }: Props) => {
+  const columns = [
+    {
+      header: 'Class Name',
+      accessor: 'name',
+    },
+    {
+      header: 'Capacity',
+      accessor: 'capacity',
+      className: 'hidden md:table-cell',
+    },
+    {
+      header: 'Grade',
+      accessor: 'grade',
+      className: 'hidden md:table-cell',
+    },
+    {
+      header: 'Supervisor',
+      accessor: 'supervisor',
+      className: 'hidden md:table-cell',
+    },
+    {
+      header: 'Time',
+      accessor: 'time',
+      className: 'hidden md:table-cell',
+    },
+    {
+      header: 'Actions',
+      accessor: 'action',
+    },
+  ];
   const { page, ...queryParams } = searchParams;
 
   const p = page ? parseInt(page) : 1;

@@ -231,7 +231,7 @@ async function saveFile(file: File) {
       cloudinary.uploader
         .upload_stream(
           {
-            resource_type: file.type === MediaType.IMAGE ? 'image' : 'raw',
+            resource_type: file.type === 'image/jpeg' ? 'image' : 'raw',
           },
           function (error, result) {
             if (error || result === undefined) {

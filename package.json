@@ -27,6 +27,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.53.1",
     "react-toastify": "^10.0.6",
+    "recharts": "^2.13.3",
     "ts-node": "^10.9.2",
     "zod": "^3.23.8"
   },

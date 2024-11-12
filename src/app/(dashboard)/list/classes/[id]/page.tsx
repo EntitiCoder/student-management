@@ -60,12 +60,19 @@ const SingleClassPage = async ({ params }: any) => {
       },
     },
   });
+  console.log(
+    '🚀 ~ file: page.tsx:63 ~ SingleClassPage ~ classData:',
+    classData?.posts
+  );
   const studentData = await prisma.student.findUnique({
     where: { id: user?.id },
     select: { classId: true },
   });
 
-  if (!studentData || studentData.classId !== Number(params.id)) {
+  if (
+    role == 'student' &&
+    (!studentData || studentData.classId !== Number(params.id))
+  ) {
     // toast.error('You are not allowed to view this class');
     return notFound();
   }
@@ -237,7 +244,7 @@ const SingleClassPage = async ({ params }: any) => {
         <Table
           columns={columns}
           renderRow={renderRow}
-          data={classData?.posts}
+          data={classData?.posts as any[]}
         />
       </div>
       {/* RIGHT */}

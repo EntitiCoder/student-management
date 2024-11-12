@@ -1,23 +1,36 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-const adminRoute = ['/admin(.*)', '/list/classes', '/list/students'];
+const adminRoute = ['/admin(.*)', '/list/students', '/list/classes'];
+const studentRoute = ['/student(.*)', '/list/students'];
 const protectedRoute = ['/admin(.*)', '/student(.*)', '/list(.*)'];
 
 const isAdminRoute = createRouteMatcher(adminRoute);
+const isStudentRoute = createRouteMatcher(studentRoute);
 const isProtectedRoute = createRouteMatcher(protectedRoute);
 
-export default clerkMiddleware(async (auth, req) => {
-  const { userId, redirectToSignIn } = await auth();
+export default clerkMiddleware(
+  async (auth, req) => {
+    const { userId, redirectToSignIn } = await auth();
 
-  if (!userId && isProtectedRoute(req)) {
-    return redirectToSignIn();
+    if (!userId && isProtectedRoute(req)) {
+      return redirectToSignIn();
+    }
+    // if (isAdminRoute(req)) {
+    //   console.log('abc');
+    //   await auth.protect((has) => {
+    //     return has({ role: 'admin' });
+    //   });
+    // }
+    // if (isStudentRoute(req)) {
+    //   await auth.protect((has) => {
+    //     return has({ role: 'student' });
+    //   });
+    // }
   }
-  if (userId && isAdminRoute(req)) {
-    await auth.protect((has) => {
-      return has({ role: 'admin' });
-    });
-  }
-});
+  // {
+  //   debug: true,
+  // }
+);
 
 export const config = {
   matcher: [
