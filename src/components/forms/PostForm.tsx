@@ -16,7 +16,17 @@ export default function PostForm({
   console.log('🚀 ~ file: PostForm.tsx:15 ~ data:', data);
 
   return (
-    <form action={type == 'create' ? createPost : updatePost}>
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        if (type === 'create') {
+          await createPost(formData);
+        } else {
+          await updatePost(formData);
+        }
+      }}
+    >
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         <input type="hidden" name="id" value={data?.id} />
         <input type="hidden" name="classId" value={classId} />
