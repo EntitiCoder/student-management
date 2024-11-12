@@ -68,7 +68,7 @@ const menuItems = [
         icon: '/assignment.png',
         label: 'Assignments',
         href: '/list/assignments',
-        visible: ['admin', 'teacher', 'student', 'parent'],
+        visible: ['admin', 'teacher', 'parent'],
       },
       // {
       //   icon: '/result.png',
@@ -98,7 +98,7 @@ const menuItems = [
         icon: '/announcement.png',
         label: 'Announcements',
         href: '/list/announcements',
-        visible: ['admin', 'teacher', 'student', 'parent'],
+        visible: ['admin', 'teacher', 'parent'],
       },
     ],
   },
@@ -130,7 +130,6 @@ const menuItems = [
 
 const Menu = async () => {
   const user = await currentUser();
-  console.log('🚀 ~ file: Menu.tsx:132 ~ Menu ~ user:', user);
   const role = user?.publicMetadata.role as string;
 
   const renderLink = (menuItem: any) => {

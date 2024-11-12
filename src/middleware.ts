@@ -1,27 +1,21 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
-import { routeAccessMap } from './lib/settings';
 
-const matchers = Object.keys(routeAccessMap).map((route) => ({
-  matcher: createRouteMatcher([route]),
-  allowedRoles: routeAccessMap[route],
-}));
+const adminRoute = ['/admin(.*)', '/list/classes', '/list/students'];
+const protectedRoute = ['/admin(.*)', '/student(.*)', '/list(.*)'];
 
-console.log(matchers);
+const isAdminRoute = createRouteMatcher(adminRoute);
+const isProtectedRoute = createRouteMatcher(protectedRoute);
 
-export default clerkMiddleware((auth, req) => {
-  // if (isProtectedRoute(req)) auth().protect()
+export default clerkMiddleware(async (auth, req) => {
+  const { userId, redirectToSignIn } = await auth();
 
-  const { sessionClaims } = auth();
-
-  const role = (sessionClaims?.metadata as { role?: string })?.role;
-
-  for (const { matcher, allowedRoles } of matchers) {
-    if (role) {
-      if (matcher(req) && !allowedRoles.includes(role!)) {
-        return NextResponse.redirect(new URL(`/${role}`, req.url));
-      }
-    }
+  if (!userId && isProtectedRoute(req)) {
+    return redirectToSignIn();
+  }
+  if (userId && isAdminRoute(req)) {
+    await auth.protect((has) => {
+      return has({ role: 'admin' });
+    });
   }
 });
 
