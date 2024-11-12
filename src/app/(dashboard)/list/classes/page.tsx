@@ -57,7 +57,6 @@ const ClassListPage = async ({ searchParams }: Props) => {
   ];
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
-
   // URL PARAMS CONDITION
 
   const query: Prisma.ClassWhereInput = {};
