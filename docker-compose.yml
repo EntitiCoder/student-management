@@ -19,7 +19,7 @@ services:
     ports:
       - '3000:3000'
     environment:
-      - DATABASE_URL: postgresql://entiti:entiti@localhost:5432/class?schema=public
+      - DATABASE_URL: postgresql://entiti:entiti@postgres:5432/class?schema=public
     depends_on:
       - postgres
 
