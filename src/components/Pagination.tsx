@@ -10,10 +10,9 @@ const Pagination = ({ page, count }: { page: number; count: number }) => {
   const hasNext = ITEM_PER_PAGE * (page - 1) + ITEM_PER_PAGE < count;
 
   const changePage = (newPage: number) => {
-    // const params = new URLSearchParams(window.location.search);
-    // params.set('page', newPage.toString());
-    // router.push(`${window.location.pathname}?${params}`);
-    console.log('change page not working');
+    const params = new URLSearchParams(window.location.search);
+    params.set('page', newPage.toString());
+    router.push(`${window.location.pathname}?${params}`);
   };
 
   return (
