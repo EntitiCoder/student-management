@@ -72,7 +72,6 @@ export const createStudent = async (
       },
     });
 
-    // revalidatePath("/list/students");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
@@ -94,7 +93,6 @@ export const createClass = async (
     await prisma.class.create({
       data,
     });
-    // revalidatePath("/list/class");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
@@ -113,8 +111,25 @@ export const updateClass = async (
       },
       data,
     });
+    console.log('success update class');
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
+};
 
-    // revalidatePath("/list/class");
+export const deleteClass = async (
+  currentState: CurrentState,
+  data: FormData
+) => {
+  const id = data.get('id');
+  try {
+    await prisma.class.delete({
+      where: {
+        id: Number(id),
+      },
+    });
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
