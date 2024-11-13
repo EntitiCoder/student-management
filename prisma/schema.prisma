@@ -25,13 +25,13 @@ model Student {
   sex         UserSex
   createdAt   DateTime     @default(now())
   parentId    String
-  classId     Int
+  classId     Int?
   gradeId     Int
   birthday    DateTime
   photo       String       @default("/avatar.png")
   attendances Attendance[]
   results     Result[]
-  class       Class        @relation(fields: [classId], references: [id])
+  class       Class?        @relation(fields: [classId], references: [id], onDelete: Cascade)
   grade       Grade        @relation(fields: [gradeId], references: [id])
   parent      Parent       @relation(fields: [parentId], references: [id])
 }
@@ -85,7 +85,7 @@ model Class {
   events        Event[]
   lessons       Lesson[]
   posts         Post[]
-  students      Student[]
+  students      Student[]    
 }
 
 model Subject {
@@ -126,7 +126,7 @@ model Post {
   title       String   @db.VarChar(255)
   description String
   classId     Int
-  class       Class    @relation(fields: [classId], references: [id])
+  class       Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
   media       Media[]
 }
 
@@ -145,7 +145,7 @@ model Exam {
   startTime DateTime
   endTime   DateTime
   lessonId  Int
-  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   results   Result[]
 }
 
@@ -187,7 +187,7 @@ model Event {
   startTime   DateTime
   endTime     DateTime
   classId     Int?
-  class       Class?   @relation(fields: [classId], references: [id])
+  class       Class?   @relation(fields: [classId], references: [id], onDelete: Cascade)
 }
 
 model Announcement {
@@ -196,7 +196,7 @@ model Announcement {
   description String
   date        DateTime
   classId     Int?
-  class       Class?   @relation(fields: [classId], references: [id])
+  class       Class?   @relation(fields: [classId], references: [id], onDelete: Cascade)
 }
 
 enum UserSex {

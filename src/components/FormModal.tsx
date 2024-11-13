@@ -1,5 +1,6 @@
 'use client';
 
+import { deleteClass } from '@/lib/actions';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -10,7 +11,7 @@ import { FormContainerProps } from './FormContainer';
 
 const deleteActionMap: { [key: string]: any } = {
   // subject: deleteSubject,
-  // class: deleteClass,
+  class: deleteClass,
   // teacher: deleteTeacher,
   // student: deleteStudent,
   // exam: deleteExam,
@@ -113,9 +114,9 @@ const FormModal = ({
   const size = type === 'create' ? 'w-8 h-8' : 'w-7 h-7';
   const bgColor =
     type === 'create'
-      ? 'bg-lamaYellow'
+      ? 'bg-[#f2f2f2]'
       : type === 'update'
-      ? 'bg-lamaSky'
+      ? 'bg-[#f0a500]'
       : 'bg-lamaPurple';
 
   const [open, setOpen] = useState(false);
