@@ -15,11 +15,11 @@ services:
 
   app:
     build: .
-    container_name: nextjs_app
+    container_name: postgres
     ports:
       - '3000:3000'
     environment:
-      - DATABASE_URL: postgresql://entiti:entiti@host.docker.internal:5432/class?schema=public&connect_timeout=30&pool_timeout=30&socket_timeout=30
+      - DATABASE_URL: postgresql://entiti:entiti@postgres:5432/class?schema=public&connect_timeout=30&pool_timeout=30&socket_timeout=30
     depends_on:
       - postgres
 
