@@ -77,7 +77,7 @@ model Class {
   id            Int            @id @default(autoincrement())
   name          String         @unique
   capacity      Int
-  time          String?         
+  time          String        @db.VarChar(255)
   supervisorId  String?
   gradeId       Int
   announcements Announcement[]

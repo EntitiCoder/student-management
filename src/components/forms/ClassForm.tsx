@@ -77,6 +77,14 @@ const ClassForm = ({
           register={register}
           error={errors?.capacity}
         />
+
+        <InputField
+          label="Time"
+          name="time"
+          defaultValue={data?.time}
+          register={register}
+          error={errors?.time}
+        />
         {/* <InputField
           label="Grade"
           name="gradeId"
