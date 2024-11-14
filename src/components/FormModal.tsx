@@ -1,13 +1,15 @@
 'use client';
 
 import { deleteClass } from '@/lib/actions';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/16/solid';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 import { toast } from 'react-toastify';
+import CreateIcon from '../../public/icons/CreateIcon';
+import DeleteIcon from '../../public/icons/DeleteIcon';
+import EditIcon from '../../public/icons/EditIcon';
 import { FormContainerProps } from './FormContainer';
 
 const deleteActionMap: { [key: string]: any } = {
@@ -157,17 +159,19 @@ const FormModal = ({
     );
   };
 
+  const iconMap = {
+    delete: <DeleteIcon />,
+    update: <EditIcon />,
+    create: <CreateIcon />,
+  };
+
   return (
     <>
       <button
         className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
         onClick={() => setOpen(true)}
       >
-        {type === 'delete' ? (
-          <TrashIcon color="red" fontSizeAdjust={10} />
-        ) : (
-          <PencilSquareIcon color="black" />
-        )}
+        {iconMap[type] || <CreateIcon />}
       </button>
       {open && (
         <div className="w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
