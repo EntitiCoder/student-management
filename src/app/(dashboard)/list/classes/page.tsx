@@ -2,12 +2,13 @@ import FormContainer from '@/components/FormContainer';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
 import TableSearch from '@/components/TableSearch';
-import { role } from '@/lib/data';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
+import { currentUser } from '@clerk/nextjs/server';
 import { Prisma } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import ViewIcon from '../../../../../public/icons/ViewIcon';
 
 type Class = {
@@ -27,6 +28,9 @@ interface Props {
 }
 
 const ClassListPage = async ({ searchParams }: Props) => {
+  const user = await currentUser();
+  const role = user?.publicMetadata.role as string;
+
   const columns = [
     {
       header: 'No',
@@ -61,6 +65,10 @@ const ClassListPage = async ({ searchParams }: Props) => {
       accessor: 'action',
     },
   ];
+
+  if (role === 'student') {
+    return notFound();
+  }
 
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;

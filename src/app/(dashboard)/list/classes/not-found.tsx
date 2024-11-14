@@ -15,8 +15,7 @@ const NotFound = () => {
         <h1 className="text-3xl font-bold">Access Denied</h1>
       </div>
       <p className="mt-4 text-center text-lg text-gray-600">
-        You don't have permission to view this class info. Please check with
-        your administrator or go back to your class.
+        You don't have permission to view classes list.
       </p>
       <button
         onClick={handleGoBack}

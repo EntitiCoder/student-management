@@ -66,10 +66,7 @@ const SingleClassPage = async ({ params }: any) => {
       students: true,
     },
   });
-  console.log(
-    '🚀 ~ file: page.tsx:63 ~ SingleClassPage ~ classData:',
-    classData?.posts
-  );
+
   const studentData = await prisma.student.findUnique({
     where: { id: user?.id },
     select: { classId: true },
@@ -155,7 +152,6 @@ const SingleClassPage = async ({ params }: any) => {
           className="w-6 h-6"
         />
       ),
-      linkTo: `/list/classes/${classId}/students`,
     },
 
     {

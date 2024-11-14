@@ -2,9 +2,9 @@ import FormContainer from '@/components/FormContainer';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
 import TableSearch from '@/components/TableSearch';
-import { role } from '@/lib/data';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
+import { currentUser } from '@clerk/nextjs/server';
 import { Student } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -67,6 +67,9 @@ interface Props {
 }
 
 const StudentListPage = async ({ searchParams, query }: Props) => {
+  const user = await currentUser();
+  const role = user?.publicMetadata.role as string;
+
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
 

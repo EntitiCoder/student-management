@@ -11,8 +11,10 @@ const LastActive = ({ time }: { time: number | null | undefined }) => {
   return (
     <div className="flex items-center space-x-2 text-gray-600">
       <ClockIcon className="w-5 h-5 text-blue-500" />
-      <span className="font-medium">Last Active:</span>
-      <span className="text-gray-700">{formatLastActiveAt(time)}</span>
+      <span className="text-md">Last Active:</span>
+      <span className="text-gray-700 italic text-sm">
+        {formatLastActiveAt(time)}
+      </span>
     </div>
   );
 };
