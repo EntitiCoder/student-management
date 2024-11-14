@@ -5,7 +5,7 @@ import TableSearch from '@/components/TableSearch';
 import { role } from '@/lib/data';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
-import { Prisma, Student } from '@prisma/client';
+import { Student } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
 import ViewIcon from '../../../../../public/icons/ViewIcon';
@@ -25,6 +25,10 @@ import ViewIcon from '../../../../../public/icons/ViewIcon';
 type StudentList = Student & { class: { name: string } };
 
 const columns = [
+  {
+    header: 'No',
+    accessor: 'no',
+  },
   {
     header: 'Info',
     accessor: 'info',
@@ -59,13 +63,14 @@ interface Props {
   searchParams: {
     page: string;
   };
+  query?: any;
 }
 
-const StudentListPage = async ({ searchParams }: Props) => {
+const StudentListPage = async ({ searchParams, query }: Props) => {
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
 
-  const query: Prisma.StudentWhereInput = {};
+  // const query: Prisma.StudentWhereInput = {};
 
   // if (queryParams) {
   //   for (const [key, value] of Object.entries(queryParams)) {
@@ -102,11 +107,13 @@ const StudentListPage = async ({ searchParams }: Props) => {
     prisma.student.count({ where: query }),
   ]);
 
-  const renderRow = (item: StudentList) => (
+  const renderRow = (item: StudentList, index: number) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
+      <td className="gap-4 p-4">{index + 1}</td>
+
       <td className="flex items-center gap-4 p-4">
         <Image
           src={item.photo}

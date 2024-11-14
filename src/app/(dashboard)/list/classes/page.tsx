@@ -17,6 +17,7 @@ type Class = {
   grade: Grade;
   supervisor: string;
   time: string;
+  students: any[];
 };
 
 interface Props {
@@ -27,6 +28,10 @@ interface Props {
 
 const ClassListPage = async ({ searchParams }: Props) => {
   const columns = [
+    {
+      header: 'No',
+      accessor: 'no',
+    },
     {
       header: 'Class Name',
       accessor: 'name',
@@ -41,11 +46,11 @@ const ClassListPage = async ({ searchParams }: Props) => {
       accessor: 'grade',
       className: 'hidden md:table-cell',
     },
-    // {
-    //   header: 'Supervisor',
-    //   accessor: 'supervisor',
-    //   className: 'hidden md:table-cell',
-    // },
+    {
+      header: 'Total Students',
+      accessor: 'students',
+      className: 'hidden md:table-cell',
+    },
     {
       header: 'Time',
       accessor: 'time',
@@ -90,6 +95,7 @@ const ClassListPage = async ({ searchParams }: Props) => {
             id: true,
           },
         },
+        students: true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
@@ -97,11 +103,12 @@ const ClassListPage = async ({ searchParams }: Props) => {
     prisma.class.count({ where: query }),
   ]);
 
-  const renderRow = (item: Class) => (
+  const renderRow = (item: Class, index: number) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight "
     >
+      <td className="gap-4 p-4">{index + 1}</td>
       <td className="flex items-center gap-4 p-4">{item.name}</td>
       <td className="flex items-center gap-4 p-4 hidden md:table-cell">
         {item.capacity}
@@ -109,7 +116,9 @@ const ClassListPage = async ({ searchParams }: Props) => {
       <td className="flex items-center gap-4 p-4 hidden md:table-cell">
         {item.grade.id}
       </td>
-      {/* <td className="hidden md:table-cell">{item.supervisor.name}</td> */}
+      <td className="flex items-center gap-4 p-4 hidden md:table-cell">
+        {item.students.length}
+      </td>
       <td className="flex items-center gap-4 p-4 hidden md:table-cell">
         {item.time}
       </td>
