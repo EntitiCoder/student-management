@@ -31,7 +31,7 @@ model Student {
   photo       String       @default("/avatar.png")
   attendances Attendance[]
   results     Result[]
-  class       Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  class       Class       @relation(fields: [classId], references: [id], onDelete: Cascade)
   grade       Grade        @relation(fields: [gradeId], references: [id])
   parent      Parent       @relation(fields: [parentId], references: [id])
 }
@@ -85,7 +85,7 @@ model Class {
   events        Event[]
   lessons       Lesson[]
   posts         Post[]
-  students      Student[]    
+  students      Student[]
 }
 
 model Subject {
@@ -108,7 +108,7 @@ model Lesson {
   assignments Assignment[]
   attendances Attendance[]
   exams       Exam[]
-  class       Class        @relation(fields: [classId], references: [id])
+  class       Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
   subject     Subject      @relation(fields: [subjectId], references: [id])
   teacher     Teacher      @relation(fields: [teacherId], references: [id])
 }
@@ -126,17 +126,17 @@ model Post {
   title       String   @db.VarChar(255)
   description String
   classId     Int
-  class       Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
   media       Media[]
+  class       Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
 }
 
 model Media {
-  id          Int @id @default(autoincrement())
-  url         String
-  type        String
-  fileName     String
-  postId      Int
-  posts       Post      @relation(fields: [postId], references: [id])
+  id       Int    @id @default(autoincrement())
+  url      String
+  fileName String
+  postId   Int
+  type     String
+  posts    Post   @relation(fields: [postId], references: [id])
 }
 
 model Exam {
@@ -214,5 +214,5 @@ enum Day {
 
 enum MediaType {
   IMAGE @map("image/jpeg")
-  PDF @map("application/pdf")
+  PDF   @map("application/pdf")
 }
