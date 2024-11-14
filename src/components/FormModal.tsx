@@ -1,6 +1,7 @@
 'use client';
 
 import { deleteClass } from '@/lib/actions';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/16/solid';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -112,12 +113,13 @@ const FormModal = ({
   //   type
   // );
   const size = type === 'create' ? 'w-8 h-8' : 'w-7 h-7';
-  const bgColor =
-    type === 'create'
-      ? 'bg-[#f2f2f2]'
-      : type === 'update'
-      ? 'bg-[#f0a500]'
-      : 'bg-lamaPurple';
+  // const bgColor =
+  //   type === 'create'
+  //     ? 'bg-[#f2f2f2]'
+  //     : type === 'update'
+  //     ? 'bg-[#f0a500]'
+  //     : 'bg-lamaPurple';
+  const bgColor = 'bg-[#fff]';
 
   const [open, setOpen] = useState(false);
 
@@ -161,7 +163,11 @@ const FormModal = ({
         className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
         onClick={() => setOpen(true)}
       >
-        <Image src={`/${type}.png`} alt="" width={16} height={16} />
+        {type === 'delete' ? (
+          <TrashIcon color="red" fontSizeAdjust={10} />
+        ) : (
+          <PencilSquareIcon color="black" />
+        )}
       </button>
       {open && (
         <div className="w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">

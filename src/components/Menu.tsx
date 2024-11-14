@@ -14,7 +14,8 @@ const Menu = async () => {
           key: 'home',
           icon: '/home.png',
           label: 'Home',
-          href: role === 'admin' ? '/classes' : `/list/student/${user?.id}`,
+          href:
+            role === 'admin' ? '/list/classes' : `/list/student/${user?.id}`,
           visible: ['admin', 'teacher', 'student', 'parent'],
         },
         // {

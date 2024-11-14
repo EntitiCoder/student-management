@@ -96,14 +96,12 @@ const SingleClassPage = async ({ params }: any) => {
       <td>
         <div className="flex items-center gap-2">
           {role === 'admin' && (
-            <>
-              <FormPostContainer
-                data={item}
-                type="update"
-                id={item.id}
-                classId={classId}
-              />
-            </>
+            <FormPostContainer
+              data={item}
+              type="update"
+              id={item.id}
+              classId={classId}
+            />
           )}
         </div>
       </td>
@@ -120,7 +118,7 @@ const SingleClassPage = async ({ params }: any) => {
           <div className="bg-lamaSky py-6 px-4 rounded-md flex-1 flex gap-4">
             <div className="w-1/3">
               <Image
-                src="https://images.pexels.com/photos/5427870/pexels-photo-5427870.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                src={'/defaultClass.jpg'}
                 alt=""
                 width={144}
                 height={144}

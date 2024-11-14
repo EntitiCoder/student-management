@@ -14,7 +14,7 @@ type Class = {
   id: number;
   name: string;
   capacity: number;
-  grade: number;
+  grade: Grade;
   supervisor: string;
   time: string;
 };
@@ -41,11 +41,11 @@ const ClassListPage = async ({ searchParams }: Props) => {
       accessor: 'grade',
       className: 'hidden md:table-cell',
     },
-    {
-      header: 'Supervisor',
-      accessor: 'supervisor',
-      className: 'hidden md:table-cell',
-    },
+    // {
+    //   header: 'Supervisor',
+    //   accessor: 'supervisor',
+    //   className: 'hidden md:table-cell',
+    // },
     {
       header: 'Time',
       accessor: 'time',
@@ -85,7 +85,11 @@ const ClassListPage = async ({ searchParams }: Props) => {
       where: query,
       include: {
         supervisor: true,
-        grade: true,
+        grade: {
+          select: {
+            id: true,
+          },
+        },
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
@@ -99,8 +103,12 @@ const ClassListPage = async ({ searchParams }: Props) => {
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight "
     >
       <td className="flex items-center gap-4 p-4">{item.name}</td>
-      <td className="hidden md:table-cell">{item.capacity}</td>
-      {/* <td className="hidden md:table-cell">{item}</td> */}
+      <td className="flex items-center gap-4 p-4 hidden md:table-cell">
+        {item.capacity}
+      </td>
+      <td className="flex items-center gap-4 p-4 hidden md:table-cell">
+        {item.grade.id}
+      </td>
       {/* <td className="hidden md:table-cell">{item.supervisor.name}</td> */}
       <td className="hidden md:table-cell">{item.time}</td>
       <td>
