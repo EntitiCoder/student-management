@@ -1,6 +1,6 @@
 'use client';
 
-import { deleteClass } from '@/lib/actions';
+import { deleteClass, deleteStudent } from '@/lib/actions';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -15,8 +15,8 @@ import { FormContainerProps } from './FormContainer';
 const deleteActionMap: { [key: string]: any } = {
   // subject: deleteSubject,
   class: deleteClass,
+  student: deleteStudent,
   // teacher: deleteTeacher,
-  // student: deleteStudent,
   // exam: deleteExam,
   // TODO: OTHER DELETE ACTIONS
   // parent: deleteSubject,

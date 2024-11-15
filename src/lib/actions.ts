@@ -22,11 +22,6 @@ console.log(cloudinary.config());
 
 type CurrentState = { success: boolean; error: boolean };
 
-// export const createStudent = async (data: any) => {
-//   console.log('createStudent');
-//   console.log(data);
-// };
-
 export const createStudent = async (
   currentState: CurrentState,
   data: StudentSchema
@@ -82,6 +77,24 @@ export const createStudent = async (
 export const updateStudent = async (data: any) => {
   console.log('updateStudent');
   console.log(data);
+};
+
+export const deleteStudent = async (
+  currentState: CurrentState,
+  data: FormData
+) => {
+  const id = data.get('id') as any;
+  try {
+    await prisma.student.delete({
+      where: {
+        id,
+      },
+    });
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
 };
 
 export const createClass = async (
