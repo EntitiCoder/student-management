@@ -2,6 +2,7 @@ import FormContainer from '@/components/FormContainer';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
 import TableSearch from '@/components/TableSearch';
+import { renderNo } from '@/lib/numUtils';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 import { currentUser } from '@clerk/nextjs/server';
@@ -121,9 +122,9 @@ const StudentListPage = async ({ searchParams, params }: Props) => {
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
-      <td className="gap-4 p-4">{index + 1}</td>
+      <td className="gap-4 py-4">{renderNo(index, p)}</td>
 
-      <td className="flex items-center gap-4 p-4">
+      <td className="flex items-center gap-4 py-4">
         <Image
           src={item.photo}
           alt=""
@@ -161,11 +162,15 @@ const StudentListPage = async ({ searchParams, params }: Props) => {
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {/* TOP */}
-      <div className="flex items-center justify-between">
-        <h1 className="hidden md:block text-lg font-semibold">All Students</h1>
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <h1 className="hidden md:block text-lg font-semibold">
+            All Students
+          </h1>
+        </div>
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
-          <div className="flex items-center gap-4 self-end">
+          <div className="flex items-center gap-4">
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/filter.png" alt="" width={14} height={14} />
             </button>
@@ -173,13 +178,13 @@ const StudentListPage = async ({ searchParams, params }: Props) => {
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
             {role === 'admin' && (
-              // <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              //   <Image src="/plus.png" alt="" width={14} height={14} />
-              // </button>
               <FormContainer table="student" type="create" />
             )}
           </div>
         </div>
+      </div>
+      <div className="italic py-2 text-slate-500 rounded-md font-medium">
+        Showing <b>{count}</b> students
       </div>
       {/* LIST */}
       <Table columns={columns} renderRow={renderRow} data={data} />

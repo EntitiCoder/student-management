@@ -9,7 +9,7 @@ interface Student {
   bloodType: string;
   sex: 'FEMALE' | 'MALE';
   createdAt: Date;
-  parentId: string;
+  // parentId: string;
   classId: number;
   gradeId: number;
   birthday: Date;

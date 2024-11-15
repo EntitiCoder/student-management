@@ -1,12 +1,15 @@
 'use client';
 
 import PostForm from '@/components/forms/PostForm';
+import CreateIcon from '@public/icons/CreateIcon';
+import DeleteIcon from '@public/icons/DeleteIcon';
+import EditIcon from '@public/icons/EditIcon';
 import Image from 'next/image';
 import { useState } from 'react';
 
 interface FormPostContainerProps {
   data?: any;
-  type: 'create' | 'update';
+  type: 'create' | 'update' | 'delete';
   id?: number;
   classId: number;
 }
@@ -18,9 +21,15 @@ const FormPostContainer = ({
   classId,
 }: FormPostContainerProps) => {
   const size = type === 'create' ? 'w-8 h-8' : 'w-7 h-7';
-  const bgColor = type === 'create' ? 'bg-[#fff]' : 'bg-[#000]';
+  const bgColor = 'bg-[#fff]';
 
   const [open, setOpen] = useState(false);
+
+  const iconList = {
+    delete: <DeleteIcon />,
+    update: <EditIcon />,
+    create: <CreateIcon />,
+  };
 
   return (
     <div className="">
@@ -28,7 +37,7 @@ const FormPostContainer = ({
         className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
         onClick={() => setOpen(true)}
       >
-        <Image src={`/${type}.png`} alt="" width={16} height={16} />
+        {iconList[type] || <CreateIcon />}
       </button>
       {open && (
         <div className="w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
@@ -38,6 +47,7 @@ const FormPostContainer = ({
               type={type}
               setOpen={setOpen}
               classId={classId}
+              id={id}
             />
             <div
               className="absolute top-4 right-4 cursor-pointer"

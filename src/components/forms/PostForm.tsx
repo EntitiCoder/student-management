@@ -1,21 +1,51 @@
 'use client';
 
-import { createPost, updatePost } from '@/lib/actions';
+import { createPost, deletePost, updatePost } from '@/lib/actions';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useFormState } from 'react-dom';
 
 export default function PostForm({
   data,
   classId,
   type,
   setOpen,
+  id,
 }: {
   data: any;
   classId: number;
-  type: 'create' | 'update';
+  type: 'create' | 'update' | 'delete';
   setOpen: any;
+  id: number | undefined;
 }) {
   console.log('🚀 ~ file: PostForm.tsx:15 ~ data:', data);
 
-  return (
+  const [state, formAction] = useFormState(deletePost, {
+    success: false,
+    error: false,
+  });
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state.success) {
+      // toast(`${table} has been deleted!`);
+      setOpen(false);
+      router.refresh();
+    }
+  }, [state, router]);
+
+  return type === 'delete' && id ? (
+    <form action={formAction} className="p-4 flex flex-col gap-4">
+      <input type="text | number" name="id" value={id} hidden />
+      <span className="text-center font-medium">
+        All data inside will be lost. Are you sure you want to delete this post?
+      </span>
+      <button className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center">
+        Delete
+      </button>
+    </form>
+  ) : type === 'create' || type === 'update' ? (
     <form
       onSubmit={async (e) => {
         e.preventDefault();
@@ -84,5 +114,7 @@ export default function PostForm({
         </button>
       </div>
     </form>
+  ) : (
+    'Form not found!'
   );
 }

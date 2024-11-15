@@ -1,6 +1,6 @@
 'use client';
 
-import { deleteClass } from '@/lib/actions';
+import { deleteClass, deleteStudent } from '@/lib/actions';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -15,8 +15,8 @@ import { FormContainerProps } from './FormContainer';
 const deleteActionMap: { [key: string]: any } = {
   // subject: deleteSubject,
   class: deleteClass,
+  student: deleteStudent,
   // teacher: deleteTeacher,
-  // student: deleteStudent,
   // exam: deleteExam,
   // TODO: OTHER DELETE ACTIONS
   // parent: deleteSubject,
@@ -159,7 +159,7 @@ const FormModal = ({
     );
   };
 
-  const iconMap = {
+  const iconList = {
     delete: <DeleteIcon />,
     update: <EditIcon />,
     create: <CreateIcon />,
@@ -171,7 +171,7 @@ const FormModal = ({
         className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
         onClick={() => setOpen(true)}
       >
-        {iconMap[type] || <CreateIcon />}
+        {iconList[type] || <CreateIcon />}
       </button>
       {open && (
         <div className="w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
