@@ -125,7 +125,7 @@ const SingleClassPage = async ({ params }: any) => {
           className="w-6 h-6"
         />
       ),
-      linkTo: `/list/classes/${classId}/students`,
+      linkTo: `/list/students?classId=${classId}`,
     },
     {
       data: classData?.grade?.id,
