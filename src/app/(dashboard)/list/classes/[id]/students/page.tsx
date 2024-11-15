@@ -8,7 +8,6 @@ const StudentListByClassPage = async ({ params, searchParams }: any) => {
   const role = user?.publicMetadata.role as string;
   const classId = Number(params.id);
   const { page, ...queryParams } = searchParams;
-  const { id } = params;
 
   const studentData = await prisma.student.findUnique({
     where: { id: user?.id },
@@ -23,9 +22,7 @@ const StudentListByClassPage = async ({ params, searchParams }: any) => {
     return notFound();
   }
 
-  return (
-    <StudentListPage searchParams={{ page }} query={{ classId: Number(id) }} />
-  );
+  return <StudentListPage searchParams={{ page }} params={{ id: classId }} />;
 };
 
 export default StudentListByClassPage;

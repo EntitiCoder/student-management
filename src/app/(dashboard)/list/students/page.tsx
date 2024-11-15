@@ -22,7 +22,14 @@ import ViewIcon from '../../../../../public/icons/ViewIcon';
 //   address: string;
 // };
 
-type StudentList = Student & { class: { name: string } };
+type StudentList = Student & { class: { name: string; time: string } };
+
+interface Props {
+  searchParams: {
+    page: string;
+  };
+  params: any;
+}
 
 const columns = [
   {
@@ -59,19 +66,14 @@ const columns = [
   },
 ];
 
-interface Props {
-  searchParams: {
-    page: string;
-  };
-  query?: any;
-}
-
-const StudentListPage = async ({ searchParams, query }: Props) => {
+const StudentListPage = async ({ searchParams, params }: Props) => {
   const user = await currentUser();
   const role = user?.publicMetadata.role as string;
 
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
+
+  const { id: classId } = params;
 
   // const query: Prisma.StudentWhereInput = {};
 
@@ -98,16 +100,18 @@ const StudentListPage = async ({ searchParams, query }: Props) => {
   //   }
   // }
 
+  const query = {};
+
   const [data, count] = await prisma.$transaction([
     prisma.student.findMany({
-      where: query,
+      where: classId,
       include: {
         class: true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),
-    prisma.student.count({ where: query }),
+    prisma.student.count({ where: classId }),
   ]);
 
   const renderRow = (item: StudentList, index: number) => (
@@ -127,7 +131,7 @@ const StudentListPage = async ({ searchParams, query }: Props) => {
         />
         <div className="flex flex-col">
           <h3 className="font-semibold">{item.name}</h3>
-          <p className="text-xs text-gray-500">{item.class.name}</p>
+          <p className="text-xs text-gray-500">{item?.class.name}</p>
         </div>
       </td>
       <td className="hidden md:table-cell">{item.id}</td>
