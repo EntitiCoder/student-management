@@ -14,7 +14,8 @@ const Menu = async () => {
           key: 'home',
           icon: '/home.png',
           label: 'Home',
-          href: role === 'admin' ? '/classes' : `/list/student/${user?.id}`,
+          href:
+            role === 'admin' ? '/list/classes' : `/list/student/${user?.id}`,
           visible: ['admin', 'teacher', 'student', 'parent'],
         },
         // {
@@ -144,7 +145,7 @@ const Menu = async () => {
   return (
     <div className="mt-4 text-sm">
       {menuItems.map((i) => (
-        <div className="flex flex-col gap-2" key={i.title}>
+        <div className="flex flex-col" key={i.title}>
           <span className="hidden lg:block text-gray-400 font-light my-4">
             {i.title}
           </span>
@@ -154,7 +155,7 @@ const Menu = async () => {
                 <Link
                   href={renderLink(item)}
                   key={item.label}
-                  className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-2 md:px-2 rounded-md hover:bg-lamaSkyLight"
+                  className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-3 md:px-2 rounded-md hover:bg-gray-200"
                 >
                   <Image src={item.icon} alt="" width={20} height={20} />
                   <span className="hidden lg:block">{item.label}</span>

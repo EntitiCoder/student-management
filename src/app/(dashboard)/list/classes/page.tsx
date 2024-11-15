@@ -2,21 +2,23 @@ import FormContainer from '@/components/FormContainer';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
 import TableSearch from '@/components/TableSearch';
-import { role } from '@/lib/data';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
-import { EyeIcon } from '@heroicons/react/16/solid';
+import { currentUser } from '@clerk/nextjs/server';
 import { Prisma } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import ViewIcon from '../../../../../public/icons/ViewIcon';
 
 type Class = {
   id: number;
   name: string;
   capacity: number;
-  grade: number;
+  grade: Grade;
   supervisor: string;
   time: string;
+  students: any[];
 };
 
 interface Props {
@@ -26,7 +28,14 @@ interface Props {
 }
 
 const ClassListPage = async ({ searchParams }: Props) => {
+  const user = await currentUser();
+  const role = user?.publicMetadata.role as string;
+
   const columns = [
+    {
+      header: 'No',
+      accessor: 'no',
+    },
     {
       header: 'Class Name',
       accessor: 'name',
@@ -42,8 +51,8 @@ const ClassListPage = async ({ searchParams }: Props) => {
       className: 'hidden md:table-cell',
     },
     {
-      header: 'Supervisor',
-      accessor: 'supervisor',
+      header: 'Total Students',
+      accessor: 'students',
       className: 'hidden md:table-cell',
     },
     {
@@ -56,6 +65,10 @@ const ClassListPage = async ({ searchParams }: Props) => {
       accessor: 'action',
     },
   ];
+
+  if (role === 'student') {
+    return notFound();
+  }
 
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
@@ -85,7 +98,12 @@ const ClassListPage = async ({ searchParams }: Props) => {
       where: query,
       include: {
         supervisor: true,
-        grade: true,
+        grade: {
+          select: {
+            id: true,
+          },
+        },
+        students: true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
@@ -93,21 +111,30 @@ const ClassListPage = async ({ searchParams }: Props) => {
     prisma.class.count({ where: query }),
   ]);
 
-  const renderRow = (item: Class) => (
+  const renderRow = (item: Class, index: number) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight "
     >
+      <td className="gap-4 p-4">{index + 1}</td>
       <td className="flex items-center gap-4 p-4">{item.name}</td>
-      <td className="hidden md:table-cell">{item.capacity}</td>
-      {/* <td className="hidden md:table-cell">{item}</td> */}
-      {/* <td className="hidden md:table-cell">{item.supervisor.name}</td> */}
-      <td className="hidden md:table-cell">{item.time}</td>
-      <td>
+      <td className="flex items-center gap-4 p-4 hidden md:table-cell">
+        {item.capacity}
+      </td>
+      <td className="flex items-center gap-4 p-4 hidden md:table-cell">
+        {item.grade.id}
+      </td>
+      <td className="flex items-center gap-4 p-4 hidden md:table-cell">
+        {item.students.length}
+      </td>
+      <td className="flex items-center gap-4 p-4 hidden md:table-cell">
+        {item.time}
+      </td>
+      <td className="">
         <div className="flex items-center gap-2">
           <Link href={`/list/classes/${item.id}`}>
             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-[#fff]">
-              <EyeIcon />
+              <ViewIcon />
             </button>
           </Link>
           {role === 'admin' && (

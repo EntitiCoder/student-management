@@ -2,12 +2,13 @@ import FormContainer from '@/components/FormContainer';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
 import TableSearch from '@/components/TableSearch';
-import { role } from '@/lib/data';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
-import { Prisma, Student } from '@prisma/client';
+import { currentUser } from '@clerk/nextjs/server';
+import { Student } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
+import ViewIcon from '../../../../../public/icons/ViewIcon';
 
 // type Student = {
 //   id: number;
@@ -21,9 +22,20 @@ import Link from 'next/link';
 //   address: string;
 // };
 
-type StudentList = Student & { class: { name: string } };
+type StudentList = Student & { class: { name: string; time: string } };
+
+interface Props {
+  searchParams: {
+    page: string;
+  };
+  params: any;
+}
 
 const columns = [
+  {
+    header: 'No',
+    accessor: 'no',
+  },
   {
     header: 'Info',
     accessor: 'info',
@@ -54,17 +66,16 @@ const columns = [
   },
 ];
 
-interface Props {
-  searchParams: {
-    page: string;
-  };
-}
+const StudentListPage = async ({ searchParams, params }: Props) => {
+  const user = await currentUser();
+  const role = user?.publicMetadata.role as string;
 
-const StudentListPage = async ({ searchParams }: Props) => {
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
 
-  const query: Prisma.StudentWhereInput = {};
+  const { id: classId } = params;
+
+  // const query: Prisma.StudentWhereInput = {};
 
   // if (queryParams) {
   //   for (const [key, value] of Object.entries(queryParams)) {
@@ -89,23 +100,27 @@ const StudentListPage = async ({ searchParams }: Props) => {
   //   }
   // }
 
+  const query = {};
+
   const [data, count] = await prisma.$transaction([
     prisma.student.findMany({
-      where: query,
+      where: classId,
       include: {
         class: true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),
-    prisma.student.count({ where: query }),
+    prisma.student.count({ where: classId }),
   ]);
 
-  const renderRow = (item: StudentList) => (
+  const renderRow = (item: StudentList, index: number) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
+      <td className="gap-4 p-4">{index + 1}</td>
+
       <td className="flex items-center gap-4 p-4">
         <Image
           src={item.photo}
@@ -116,7 +131,7 @@ const StudentListPage = async ({ searchParams }: Props) => {
         />
         <div className="flex flex-col">
           <h3 className="font-semibold">{item.name}</h3>
-          <p className="text-xs text-gray-500">{item.class.name}</p>
+          <p className="text-xs text-gray-500">{item?.class.name}</p>
         </div>
       </td>
       <td className="hidden md:table-cell">{item.id}</td>
@@ -127,7 +142,7 @@ const StudentListPage = async ({ searchParams }: Props) => {
         <div className="flex items-center gap-2">
           <Link href={`/list/students/${item.id}`}>
             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
-              <Image src="/view.png" alt="" width={16} height={16} />
+              <ViewIcon />
             </button>
           </Link>
           {role === 'admin' && (

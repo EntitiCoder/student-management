@@ -2,6 +2,6 @@ export interface Class {
   id: number;
   name: string;
   capacity: number;
-  grade: number;
+  grade: Grade;
   time: string;
 }

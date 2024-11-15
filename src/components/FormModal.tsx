@@ -7,6 +7,9 @@ import { useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 import { toast } from 'react-toastify';
+import CreateIcon from '../../public/icons/CreateIcon';
+import DeleteIcon from '../../public/icons/DeleteIcon';
+import EditIcon from '../../public/icons/EditIcon';
 import { FormContainerProps } from './FormContainer';
 
 const deleteActionMap: { [key: string]: any } = {
@@ -112,12 +115,13 @@ const FormModal = ({
   //   type
   // );
   const size = type === 'create' ? 'w-8 h-8' : 'w-7 h-7';
-  const bgColor =
-    type === 'create'
-      ? 'bg-[#f2f2f2]'
-      : type === 'update'
-      ? 'bg-[#f0a500]'
-      : 'bg-lamaPurple';
+  // const bgColor =
+  //   type === 'create'
+  //     ? 'bg-[#f2f2f2]'
+  //     : type === 'update'
+  //     ? 'bg-[#f0a500]'
+  //     : 'bg-lamaPurple';
+  const bgColor = 'bg-[#fff]';
 
   const [open, setOpen] = useState(false);
 
@@ -141,7 +145,8 @@ const FormModal = ({
       <form action={formAction} className="p-4 flex flex-col gap-4">
         <input type="text | number" name="id" value={id} hidden />
         <span className="text-center font-medium">
-          All data will be lost. Are you sure you want to delete this {table}?
+          All data inside will be lost. Are you sure you want to delete this{' '}
+          {table}?
         </span>
         <button className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center">
           Delete
@@ -154,13 +159,19 @@ const FormModal = ({
     );
   };
 
+  const iconMap = {
+    delete: <DeleteIcon />,
+    update: <EditIcon />,
+    create: <CreateIcon />,
+  };
+
   return (
     <>
       <button
         className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
         onClick={() => setOpen(true)}
       >
-        <Image src={`/${type}.png`} alt="" width={16} height={16} />
+        {iconMap[type] || <CreateIcon />}
       </button>
       {open && (
         <div className="w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">

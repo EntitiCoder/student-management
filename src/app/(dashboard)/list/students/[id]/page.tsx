@@ -1,4 +1,5 @@
 import Announcements from '@/components/Announcements';
+import CardInfo from '@/components/CardInfo';
 import FormModal from '@/components/FormModal';
 import LastActive from '@/components/LastActive';
 import prisma from '@/lib/prisma';
@@ -30,6 +31,63 @@ const SingleStudentPage = async ({ params }: any) => {
     },
   });
 
+  const cardInfoList = [
+    {
+      data: student?.class?.name,
+      title: 'Class',
+      icon: (
+        <Image
+          src="/singleBranch.png"
+          alt=""
+          width={24}
+          height={24}
+          className="w-6 h-6"
+        />
+      ),
+      linkTo: `/list/classes/${student?.classId}`,
+    },
+    {
+      data: student?.gradeId,
+      title: 'Grade',
+      icon: (
+        <Image
+          src="/singleClass.png"
+          alt=""
+          width={24}
+          height={24}
+          className="w-6 h-6"
+        />
+      ),
+    },
+    {
+      data: student?.class?.posts?.length,
+      title: 'Posts',
+      icon: (
+        <Image
+          src="/singleLesson.png"
+          alt=""
+          width={24}
+          height={24}
+          className="w-6 h-6"
+        />
+      ),
+    },
+
+    {
+      data: student?.class?.time,
+      title: 'Schedule',
+      icon: (
+        <Image
+          src="/singleClass.png"
+          alt=""
+          width={24}
+          height={24}
+          className="w-6 h-6"
+        />
+      ),
+    },
+  ];
+
   return (
     <div className="flex-1 p-4 flex flex-col gap-4">
       <div className="w-full">
@@ -59,9 +117,6 @@ const SingleStudentPage = async ({ params }: any) => {
               </button> */}
               <div className="bg-black w-fit">
                 {role === 'admin' && (
-                  // <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-                  //   <Image src="/plus.png" alt="" width={14} height={14} />
-                  // </button>
                   <FormModal table="student" type="update" />
                 )}
               </div>
@@ -69,7 +124,7 @@ const SingleStudentPage = async ({ params }: any) => {
               <p className="text-sm text-gray-500">
                 Lorem ipsum, dolor sit amet consectetur adipisicing elit.
               </p>
-              <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
+              <div className="flex items-center justify-between gap-3 flex-wrap text-xs font-medium">
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image src="/blood.png" alt="" width={14} height={14} />
                   <span>{student?.address}</span>
@@ -91,66 +146,16 @@ const SingleStudentPage = async ({ params }: any) => {
               </div>
             </div>
           </div>
-          {/* SMALL CARDS */}
           <div className="flex-1 flex gap-4 justify-between flex-wrap">
-            {/* CARD */}
-            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
-              <Image
-                src={'/singleAttendance.png'}
-                alt=""
-                width={24}
-                height={24}
-                className="w-6 h-6"
+            {cardInfoList.map((cardInfo, index) => (
+              <CardInfo
+                key={index}
+                data={cardInfo.data}
+                title={cardInfo.title}
+                icon={cardInfo.icon}
+                linkTo={cardInfo.linkTo}
               />
-              <div className="">
-                <h1 className="text-xl font-semibold">90%</h1>
-                <span className="text-sm text-gray-400">Attendance</span>
-              </div>
-            </div>
-            {/* CARD */}
-            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
-              <Image
-                src="/singleBranch.png"
-                alt=""
-                width={24}
-                height={24}
-                className="w-6 h-6"
-              />
-              <div className="">
-                <h1 className="text-xl font-semibold">6th</h1>
-                <span className="text-sm text-gray-400">Grade</span>
-              </div>
-            </div>
-            {/* CARD */}
-            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
-              <Image
-                src="/singleLesson.png"
-                alt=""
-                width={24}
-                height={24}
-                className="w-6 h-6"
-              />
-              <div className="">
-                <h1 className="text-xl font-semibold">
-                  {student?.class?.posts?.length}
-                </h1>
-                <span className="text-sm text-gray-400">Posts in Class</span>
-              </div>
-            </div>
-            {/* CARD */}
-            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
-              <Image
-                src="/singleClass.png"
-                alt=""
-                width={24}
-                height={24}
-                className="w-6 h-6"
-              />
-              <div className="">
-                <h1 className="text-xl font-semibold">{student?.class.name}</h1>
-                <span className="text-sm text-gray-400">Class</span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
         {/* BOTTOM */}

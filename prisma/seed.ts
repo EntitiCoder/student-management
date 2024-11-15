@@ -32,6 +32,7 @@ async function main() {
         name: `${i}A`,
         gradeId: i,
         capacity: Math.floor(Math.random() * (20 - 15 + 1)) + 15,
+        time: '08:00 - 15:00',
       },
     });
   }
