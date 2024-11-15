@@ -16,7 +16,7 @@ export default function PostForm({
   classId: number;
   type: 'create' | 'update' | 'delete';
   setOpen: any;
-  id: number;
+  id: number | undefined;
 }) {
   console.log('🚀 ~ file: PostForm.tsx:15 ~ data:', data);
 
