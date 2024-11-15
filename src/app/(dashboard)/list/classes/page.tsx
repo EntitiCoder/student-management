@@ -97,7 +97,7 @@ const ClassListPage = async ({ searchParams }: Props) => {
     prisma.class.findMany({
       where: query,
       include: {
-        supervisor: true,
+        // supervisor: true,
         grade: {
           select: {
             id: true,
