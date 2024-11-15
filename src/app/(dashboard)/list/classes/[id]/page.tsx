@@ -4,6 +4,7 @@ import CardInfo from '@/components/CardInfo';
 import FormPostContainer from '@/components/FormPostContainer';
 import Table from '@/components/Table';
 import TableSearch from '@/components/TableSearch';
+import { formatDateTime } from '@/lib/dateUtils';
 import prisma from '@/lib/prisma';
 import { currentUser } from '@clerk/nextjs/server';
 import Image from 'next/image';
@@ -11,6 +12,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 type Post = {
+  createdAt: Date;
   id: number;
   title: string;
   description: string;
@@ -22,6 +24,12 @@ const columns = [
   {
     header: 'No',
     accessor: 'no',
+    className: 'w-[60px]',
+  },
+  {
+    header: 'Created At',
+    accessor: 'createdAt',
+    className: 'w-[180px]',
   },
   {
     header: 'Title',
@@ -35,6 +43,10 @@ const columns = [
   {
     header: 'Content',
     accessor: 'media',
+  },
+  {
+    header: 'Actions',
+    accessor: 'actions',
   },
 ];
 
@@ -85,8 +97,11 @@ const SingleClassPage = async ({ params }: any) => {
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight "
     >
-      <td className="gap-4 p-4">{index + 1}</td>
-      <td className="flex items-center gap-4 p-4">{item.title}</td>
+      <td className="gap-4 py-4">{index + 1}</td>
+      <td className="flex items-center gap-4 py-4 w-[180px]">
+        {formatDateTime(item.createdAt)}
+      </td>
+      <td className="py-4">{item.title}</td>
       <td className="">{item.description}</td>
       <td className="">
         <Link
@@ -100,12 +115,20 @@ const SingleClassPage = async ({ params }: any) => {
       <td>
         <div className="flex items-center gap-2">
           {role === 'admin' && (
-            <FormPostContainer
-              data={item}
-              type="update"
-              id={item.id}
-              classId={classId}
-            />
+            <>
+              <FormPostContainer
+                data={item}
+                type="update"
+                id={item.id}
+                classId={classId}
+              />
+              <FormPostContainer
+                data={item}
+                type="delete"
+                id={item.id}
+                classId={classId}
+              />
+            </>
           )}
         </div>
       </td>

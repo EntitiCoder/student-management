@@ -88,7 +88,6 @@ export const createClass = async (
   currentState: CurrentState,
   data: ClassSchema
 ) => {
-  console.log('create');
   try {
     await prisma.class.create({
       data,
@@ -234,6 +233,24 @@ export async function updatePost(formData: FormData) {
 
   // redirect('/');
 }
+
+export const deletePost = async (
+  currentState: CurrentState,
+  data: FormData
+) => {
+  const id = data.get('id');
+  try {
+    await prisma.post.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
+};
 
 async function saveFile(file: File) {
   //'image/jpeg',
