@@ -56,9 +56,9 @@ export const createStudent = async (
         surname: data.surname,
         email: data.email || null,
         phone: data.phone || null,
-        address: data.address,
+        address: data.address || '',
         img: data.img || null,
-        bloodType: data.bloodType,
+        bloodType: data.bloodType || '',
         sex: data.sex,
         birthday: data.birthday,
         gradeId: data.gradeId,
@@ -157,20 +157,26 @@ const FormSchema = z.object({
 });
 
 export async function createPost(formData: FormData) {
-  const file = formData.get('media') as File;
-  const { url, type, fileName } = await saveFile(file);
+  let media: FileUpload[] = [];
+  const file = formData.get('media') as File | null;
 
-  const { title, description, media, classId } = FormSchema.parse({
-    classId: Number(formData.get('classId')),
-    title: formData.get('title'),
-    description: formData.get('description'),
-    media: [
+  if (file && file.size > 0) {
+    const { url, type, fileName } = await saveFile(file);
+    media = [
       {
         url,
         type,
         fileName,
       },
-    ],
+    ];
+  }
+
+  // Parse the form data
+  const { title, description, classId } = FormSchema.parse({
+    classId: Number(formData.get('classId')),
+    title: formData.get('title'),
+    description: formData.get('description'),
+    media,
   });
 
   try {
@@ -179,7 +185,7 @@ export async function createPost(formData: FormData) {
         title: title,
         description: description,
         media: {
-          create: media,
+          create: media.length > 0 ? media : undefined,
         },
         class: {
           connect: {
@@ -200,20 +206,25 @@ export async function createPost(formData: FormData) {
 }
 
 export async function updatePost(formData: FormData) {
-  const file = formData.get('media') as File;
-  const { url, type, fileName } = await saveFile(file);
+  let media: FileUpload[] = [];
+  const file = formData.get('media') as File | null;
 
-  const { title, description, media, classId } = FormSchema.parse({
-    classId: Number(formData.get('classId')),
-    title: formData.get('title'),
-    description: formData.get('description'),
-    media: [
+  if (file && file.size > 0) {
+    const { url, type, fileName } = await saveFile(file);
+    media = [
       {
         url,
         type,
         fileName,
       },
-    ],
+    ];
+  }
+  // Parse the form data
+  const { title, description, classId } = FormSchema.parse({
+    classId: Number(formData.get('classId')),
+    title: formData.get('title'),
+    description: formData.get('description'),
+    media,
   });
 
   try {
@@ -224,11 +235,13 @@ export async function updatePost(formData: FormData) {
       data: {
         title: title,
         description: description,
-        media: {
-          // Assuming you want to replace or update media based on a unique identifier
-          deleteMany: {}, // Deletes existing media entries if needed
-          create: media, // Creates new media entries based on provided media data
-        },
+        media:
+          media.length > 0
+            ? {
+                deleteMany: {},
+                create: media,
+              }
+            : undefined,
         class: {
           connect: {
             id: classId,
@@ -236,6 +249,7 @@ export async function updatePost(formData: FormData) {
         },
       },
     });
+
     console.log('success update post');
     revalidatePath(`/list/classes/${classId}`);
     return { success: true, error: false };

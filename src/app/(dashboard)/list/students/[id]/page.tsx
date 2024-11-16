@@ -1,4 +1,3 @@
-import Announcements from '@/components/Announcements';
 import CardInfo from '@/components/CardInfo';
 import FormModal from '@/components/FormModal';
 import LastActive from '@/components/LastActive';
@@ -97,7 +96,7 @@ const SingleStudentPage = async ({ params }: any) => {
           <div className="bg-lamaSky py-6 px-4 rounded-md flex-1 flex gap-4">
             <div className="w-1/3">
               <Image
-                src={student?.photo as string}
+                src={user?.imageUrl as string}
                 alt=""
                 width={144}
                 height={144}
@@ -122,7 +121,7 @@ const SingleStudentPage = async ({ params }: any) => {
               </div>
 
               <p className="text-sm text-gray-500">
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                Trang cá nhân của học sinh {student?.name} {student?.surname} ^^
               </p>
               <div className="flex items-center justify-between gap-3 flex-wrap text-xs font-medium">
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
@@ -189,7 +188,7 @@ const SingleStudentPage = async ({ params }: any) => {
           </div>
         </div>
         {/* <Performance /> */}
-        <Announcements />
+        {/* <Announcements /> */}
       </div>
     </div>
   );

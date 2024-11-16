@@ -9,6 +9,7 @@ type InputFieldProps = {
   error?: FieldError;
   hidden?: boolean;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+  required?: boolean;
 };
 
 const InputField = ({
@@ -20,10 +21,13 @@ const InputField = ({
   error,
   hidden,
   inputProps,
+  required,
 }: InputFieldProps) => {
   return (
     <div className={hidden ? 'hidden' : 'flex flex-col gap-2 w-full md:w-1/4'}>
-      <label className="text-xs text-gray-500">{label}</label>
+      <label className="text-xs text-gray-500">
+        {label} {required ? <span className="text-red-500">*</span> : ''}
+      </label>
       <input
         type={type}
         {...register(name)}

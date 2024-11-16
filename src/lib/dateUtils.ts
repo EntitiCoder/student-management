@@ -7,3 +7,7 @@ export const formatLastActiveAt = (timestamp: number | null | undefined) => {
 export const formatDateTime = (timestamp: Date) => {
   return dayjs(timestamp).format('DD-MM-YYYY hh:mm:ss A');
 };
+
+export const formateDayOnly = (timestamp: Date) => {
+  return dayjs(timestamp).format('DD-MM-YYYY');
+};

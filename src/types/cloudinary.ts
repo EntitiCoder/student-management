@@ -51,7 +51,7 @@ enum MediaType {
 }
 
 interface FileUpload {
-  id: number;
+  id?: number;
   url: string;
   type: string;
   fileName: string;
