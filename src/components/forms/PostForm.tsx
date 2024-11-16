@@ -4,6 +4,7 @@ import { createPost, deletePost, updatePost } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useFormState } from 'react-dom';
+import { toast } from 'react-toastify';
 
 export default function PostForm({
   data,
@@ -18,8 +19,6 @@ export default function PostForm({
   setOpen: any;
   id: number | undefined;
 }) {
-  console.log('🚀 ~ file: PostForm.tsx:15 ~ data:', data);
-
   const [state, formAction] = useFormState(deletePost, {
     success: false,
     error: false,
@@ -29,7 +28,7 @@ export default function PostForm({
 
   useEffect(() => {
     if (state.success) {
-      // toast(`${table} has been deleted!`);
+      toast(`This post has been deleted!`);
       setOpen(false);
       router.refresh();
     }
@@ -52,8 +51,12 @@ export default function PostForm({
         const formData = new FormData(e.currentTarget);
         if (type === 'create') {
           await createPost(formData);
+          toast('Post has been created!');
+          setOpen(false);
         } else {
           await updatePost(formData);
+          toast('Post has been updated!');
+          setOpen(false);
         }
       }}
     >
@@ -95,13 +98,24 @@ export default function PostForm({
           <label htmlFor="media" className="mb-2 block text-sm font-medium">
             Content/File *
           </label>
+          {data?.media?.[0]?.url && (
+            <div className="flex gap-1 my-2">
+              <p className="text-sm text-gray-500">Current file:</p>
+              <a
+                href={data.media[0].url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 underline"
+              >
+                {data?.media[0].fileName}
+              </a>
+            </div>
+          )}
           <input
             type="file"
             id="media"
             name="media"
             className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
-            required
-            // defaultValue={data?.media}
           />
         </div>
       </div>

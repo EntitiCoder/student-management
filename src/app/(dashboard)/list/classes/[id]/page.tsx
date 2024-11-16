@@ -41,7 +41,7 @@ const columns = [
   },
   // Link
   {
-    header: 'Content',
+    header: 'Media File',
     accessor: 'media',
   },
   {
@@ -102,12 +102,22 @@ const SingleClassPage = async ({ params }: any) => {
         {formatDateTime(item.createdAt)}
       </td>
       <td className="py-4">{item.title}</td>
-      <td className="">{item.description}</td>
       <td className="">
         <Link
-          href={item?.media[0]?.url}
+          href={item?.description}
           rel="noopener noreferrer"
           target="_blank"
+          className="text-blue-500"
+        >
+          {item.description}
+        </Link>
+      </td>
+      <td className="">
+        <Link
+          href={item?.media[0]?.url || ''}
+          rel="noopener noreferrer"
+          target="_blank"
+          className="text-blue-500"
         >
           {item?.media[0]?.fileName}
         </Link>
