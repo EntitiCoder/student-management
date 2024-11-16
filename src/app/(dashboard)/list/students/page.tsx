@@ -2,6 +2,7 @@ import FormContainer from '@/components/FormContainer';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
 import TableSearch from '@/components/TableSearch';
+import { formateDayOnly } from '@/lib/dateUtils';
 import { renderNo } from '@/lib/numUtils';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
@@ -55,6 +56,10 @@ const columns = [
     header: 'Phone',
     accessor: 'phone',
     className: 'hidden lg:table-cell',
+  },
+  {
+    header: 'Birthday',
+    accessor: 'birthday',
   },
   {
     header: 'Address',
@@ -122,7 +127,7 @@ const StudentListPage = async ({ searchParams, params }: Props) => {
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
-      <td className="gap-4 py-4">{renderNo(index, p)}</td>
+      <td className="py-4">{renderNo(index, p)}</td>
 
       <td className="flex items-center gap-4 py-4">
         <Image
@@ -130,16 +135,19 @@ const StudentListPage = async ({ searchParams, params }: Props) => {
           alt=""
           width={40}
           height={40}
-          className="md:hidden xl:block w-10 h-10 rounded-full object-cover"
+          className="xl:block w-10 h-10 rounded-full object-cover"
         />
         <div className="flex flex-col">
-          <h3 className="font-semibold">{item.name}</h3>
+          <h3 className="font-semibold">
+            {item.name} {item.surname}
+          </h3>
           <p className="text-xs text-gray-500">{item?.class.name}</p>
         </div>
       </td>
       <td className="hidden md:table-cell">{item.id}</td>
       <td className="hidden md:table-cell">{item.gradeId}</td>
       <td className="hidden md:table-cell">{item.phone}</td>
+      <td className="hidden md:table-cell">{formateDayOnly(item.birthday)}</td>
       <td className="hidden md:table-cell">{item.address}</td>
       <td>
         <div className="flex items-center gap-2">

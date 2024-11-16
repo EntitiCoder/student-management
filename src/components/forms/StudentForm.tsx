@@ -72,13 +72,7 @@ const StudentForm = ({
           defaultValue={data?.username}
           register={register}
           error={errors?.username}
-        />
-        <InputField
-          label="Email"
-          name="email"
-          defaultValue={data?.email}
-          register={register}
-          error={errors?.email}
+          required
         />
         <InputField
           label="Password"
@@ -87,6 +81,14 @@ const StudentForm = ({
           defaultValue={data?.password}
           register={register}
           error={errors?.password}
+          required
+        />
+        <InputField
+          label="Email"
+          name="email"
+          defaultValue={data?.email}
+          register={register}
+          error={errors?.email}
         />
       </div>
       <span className="text-xs text-gray-400 font-medium">
@@ -118,6 +120,7 @@ const StudentForm = ({
           defaultValue={data?.name}
           register={register}
           error={errors.name}
+          required
         />
         <InputField
           label="Last Name"
@@ -125,6 +128,7 @@ const StudentForm = ({
           defaultValue={data?.surname}
           register={register}
           error={errors.surname}
+          required
         />
         <InputField
           label="Phone"
@@ -139,6 +143,7 @@ const StudentForm = ({
           defaultValue={data?.address}
           register={register}
           error={errors.address}
+          hidden
         />
         <InputField
           label="Blood Type"
@@ -146,6 +151,7 @@ const StudentForm = ({
           defaultValue={data?.bloodType}
           register={register}
           error={errors.bloodType}
+          hidden
         />
         <InputField
           label="Birthday"
