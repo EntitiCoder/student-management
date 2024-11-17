@@ -178,7 +178,7 @@ model Attendance {
   studentId String
   lessonId  Int
   lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  student   Student  @relation(fields: [studentId], references: [id])
+  student   Student  @relation(fields: [studentId], references: [id],onDelete: Cascade)
 }
 
 model Event {
