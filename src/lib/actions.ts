@@ -83,13 +83,16 @@ export const deleteStudent = async (
   currentState: CurrentState,
   data: FormData
 ) => {
-  const id = data.get('id') as any;
+  const id = data.get('id') as string;
   try {
+    const clerk = await clerkClient();
+    await clerk.users.deleteUser(id);
     await prisma.student.delete({
       where: {
-        id,
+        id: id,
       },
     });
+    // revalidatePath("/list/students");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
