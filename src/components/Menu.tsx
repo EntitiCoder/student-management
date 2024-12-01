@@ -57,24 +57,24 @@ const Menu = async () => {
         //   href: '/list/subjects',
         //   visible: ['admin'],
         // },
-        {
-          icon: '/lesson.png',
-          label: 'Lessons',
-          href: '/list/lessons',
-          visible: ['admin', 'teacher'],
-        },
+        // {
+        //   icon: '/lesson.png',
+        //   label: 'Lessons',
+        //   href: '/list/lessons',
+        //   visible: ['admin', 'teacher'],
+        // },
         // {
         //   icon: '/exam.png',
         //   label: 'Exams',
         //   href: '/list/exams',
         //   visible: ['admin', 'teacher', 'student', 'parent'],
         // },
-        {
-          icon: '/assignment.png',
-          label: 'Assignments',
-          href: '/list/assignments',
-          visible: ['admin', 'teacher', 'parent'],
-        },
+        // {
+        //   icon: '/assignment.png',
+        //   label: 'Assignments',
+        //   href: '/list/assignments',
+        //   visible: ['admin', 'teacher', 'parent'],
+        // },
         // {
         //   icon: '/result.png',
         //   label: 'Results',
@@ -99,12 +99,12 @@ const Menu = async () => {
         //   href: '/list/messages',
         //   visible: ['admin', 'teacher', 'student', 'parent'],
         // },
-        {
-          icon: '/announcement.png',
-          label: 'Announcements',
-          href: '/list/announcements',
-          visible: ['admin', 'teacher', 'parent'],
-        },
+        // {
+        //   icon: '/announcement.png',
+        //   label: 'Announcements',
+        //   href: '/list/announcements',
+        //   visible: ['admin', 'teacher', 'parent'],
+        // },
       ],
     },
     {
