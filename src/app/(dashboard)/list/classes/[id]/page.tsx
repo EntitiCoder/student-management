@@ -1,6 +1,7 @@
 // import BigCalendar from '@/components/BigCalender';
 // import Performance from '@/components/Performance';
 import CardInfo from '@/components/CardInfo';
+import FormContainer from '@/components/FormContainer';
 import FormPostContainer from '@/components/FormPostContainer';
 import Table from '@/components/Table';
 import TableSearch from '@/components/TableSearch';
@@ -110,10 +111,10 @@ const SingleClassPage = async ({ params }: any) => {
       </td>
 
       {/* Title */}
-      <td className="py-4 font-medium text-gray-800">{item.title}</td>
+      <td className="p-4 font-medium text-gray-800">{item.title}</td>
 
       {/* Description */}
-      <td className="py-4">
+      <td className="p-4">
         <Link
           href={item?.description}
           rel="noopener noreferrer"
@@ -127,7 +128,7 @@ const SingleClassPage = async ({ params }: any) => {
       </td>
 
       {/* Media */}
-      <td className="py-4">
+      <td className="p-4">
         {item?.media[0]?.url ? (
           <Link
             href={item?.media[0]?.url}
@@ -135,7 +136,7 @@ const SingleClassPage = async ({ params }: any) => {
             target="_blank"
             className="text-blue-500 flex items-center gap-2"
           >
-            <span className="material-icons text-blue-500">attach_file</span>
+            {/* <span className="material-icons text-blue-500">attach_file</span> */}
             <span className="underline hover:text-blue-700 transition-colors duration-150">
               {item?.media[0]?.fileName || 'Media File'}
             </span>
@@ -233,43 +234,55 @@ const SingleClassPage = async ({ params }: any) => {
         {/* TOP */}
         <div className="flex flex-col lg:flex-row gap-4">
           {/* USER INFO CARD */}
-          <div className="bg-lamaSky py-6 px-4 rounded-md flex-1 flex gap-4">
-            <div className="w-1/3">
+          <div className="bg-lamaSky py-6 px-6 rounded-lg flex gap-6">
+            {/* Left Section (Image and File Upload) */}
+            <div className="w-1/3 flex flex-col items-center">
               <Image
-                src={'/defaultClass.jpg'}
-                alt=""
+                src={classData?.photo ?? '/defaultClass.jpg'}
+                alt="Class Photo"
                 width={144}
                 height={144}
-                className="w-36 h-36 rounded-full object-cover"
+                className="w-40 h-40 rounded-md object-cover mb-4"
               />
             </div>
-            <div className="w-2/3 flex flex-col justify-between gap-4">
-              <h1 className="text-xl font-semibold">{classData?.name}</h1>
-              <p className="text-sm text-gray-500">
+
+            {/* Right Section (Class Details) */}
+            <div className="w-2/3 flex flex-col justify-between gap-6">
+              <h1 className="text-2xl flex gap-2 font-semibold text-gray-800">
+                {classData?.name}{' '}
+                {role === 'admin' && (
+                  <>
+                    <FormContainer
+                      table="class"
+                      type="update"
+                      data={classData}
+                    />
+                  </>
+                )}
+              </h1>
+
+              <p className="text-sm text-gray-600">
                 Capacity: {classData?.capacity}
                 <br />
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint,
+                quod?
               </p>
-              {/* <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
-                <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
-                  <Image src="/blood.png" alt="" width={14} height={14} />
-                  <span>A+</span>
-                </div>
-                <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
-                  <Image src="/date.png" alt="" width={14} height={14} />
-                  <span>January 2025</span>
-                </div>
-                <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
-                  <Image src="/mail.png" alt="" width={14} height={14} />
-                  <span>user@gmail.com</span>
-                </div>
-                <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
-                  <Image src="/phone.png" alt="" width={14} height={14} />
-                  <span>+1 234 567</span>
-                </div>
-              </div> */}
+
+              {/* Additional Information (if needed) */}
+              {/* Uncomment if you want to add more info */}
+              {/* <div className="flex items-center justify-between gap-4 text-xs font-medium text-gray-500">
+      <div className="flex items-center gap-2">
+        <Image src="/blood.png" alt="Blood Type" width={14} height={14} />
+        <span>A+</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <Image src="/date.png" alt="Date" width={14} height={14} />
+        <span>January 2025</span>
+      </div>
+    </div> */}
             </div>
           </div>
+
           <div className="flex-1 flex gap-4 justify-between flex-wrap">
             {cardInfoList.map((cardInfo, index) => (
               <CardInfo

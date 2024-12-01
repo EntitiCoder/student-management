@@ -1,5 +1,4 @@
 import CardInfo from '@/components/CardInfo';
-import FormModal from '@/components/FormModal';
 import LastActive from '@/components/LastActive';
 import prisma from '@/lib/prisma';
 import { currentUser } from '@clerk/nextjs/server';
@@ -104,8 +103,13 @@ const SingleStudentPage = async ({ params }: any) => {
               />
             </div>
             <div className="w-2/3 flex flex-col justify-between gap-4">
-              <h1 className="text-xl font-semibold">
-                {student?.name} {student?.surname}
+              <h1 className="text-xl flex gap-2 font-semibold">
+                {student?.name} {student?.surname}{' '}
+                {/* <div className=" w-fit">
+                  {role === 'admin' && (
+                    <FormModal table="student" type="update" />
+                  )}
+                </div> */}
               </h1>
               <LastActive time={user?.lastSignInAt} />
               {/* <button
@@ -114,11 +118,6 @@ const SingleStudentPage = async ({ params }: any) => {
               >
                 Edit Student Info
               </button> */}
-              <div className="bg-black w-fit">
-                {role === 'admin' && (
-                  <FormModal table="student" type="update" />
-                )}
-              </div>
 
               <p className="text-sm text-gray-500">
                 Trang cá nhân của học sinh {student?.name} {student?.surname} ^^
@@ -126,7 +125,7 @@ const SingleStudentPage = async ({ params }: any) => {
               <div className="flex items-center justify-between gap-3 flex-wrap text-xs font-medium">
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image src="/blood.png" alt="" width={14} height={14} />
-                  <span>{student?.address}</span>
+                  <span>{student?.address ?? 'N/A'}</span>
                 </div>
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image src="/date.png" alt="" width={14} height={14} />
@@ -136,11 +135,11 @@ const SingleStudentPage = async ({ params }: any) => {
                 </div>
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image src="/mail.png" alt="" width={14} height={14} />
-                  <span>{student?.email}</span>
+                  <span>{student?.email ?? 'N/A'}</span>
                 </div>
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image src="/phone.png" alt="" width={14} height={14} />
-                  <span>{student?.phone}</span>
+                  <span>{student?.phone ?? 'N/A'}</span>
                 </div>
               </div>
             </div>
@@ -168,10 +167,20 @@ const SingleStudentPage = async ({ params }: any) => {
           <h1 className="text-xl font-semibold">Shortcuts</h1>
           <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-500">
             <Link
-              className="p-3 rounded-md bg-[#f0f0f0]"
+              className="p-3 rounded-md bg-[#f0f0f0] flex items-center gap-2"
               href={`/list/classes/${student?.classId}`}
             >
-              Student&apos;s Class
+              {/* Class Avatar Image */}
+              {student?.class?.photo && (
+                <Image
+                  src={student?.class?.photo}
+                  alt="Class Avatar"
+                  width={40}
+                  height={40}
+                  // className="w-40 h-40 rounded-full object-cover"
+                />
+              )}
+              {student?.class?.name}
             </Link>
             {/* <Link className="p-3 rounded-md bg-lamaPurpleLight" href="/">
               Student&apos;s Teachers
