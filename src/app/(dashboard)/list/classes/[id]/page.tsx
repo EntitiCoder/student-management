@@ -30,7 +30,7 @@ const columns = [
   {
     header: 'Created At',
     accessor: 'createdAt',
-    className: 'w-[180px]',
+    className: 'w-[180px] hidden md:table-cell ',
   },
   {
     header: 'Title',
@@ -106,7 +106,7 @@ const SingleClassPage = async ({ params }: any) => {
       </td>
 
       {/* Created Date */}
-      <td className="py-4 w-[180px] text-gray-600">
+      <td className="hidden md:table-cell py-4 w-[180px] text-gray-600">
         {formatDateTime(item.createdAt)}
       </td>
 
@@ -233,10 +233,8 @@ const SingleClassPage = async ({ params }: any) => {
       <div className="w-full">
         {/* TOP */}
         <div className="flex flex-col lg:flex-row gap-4">
-          {/* USER INFO CARD */}
-          <div className="bg-lamaSky py-6 px-6 rounded-lg flex gap-6">
-            {/* Left Section (Image and File Upload) */}
-            <div className="w-1/3 flex flex-col items-center">
+          <div className="flex-col md:flex-row bg-lamaSky py-6 px-6 rounded-lg flex gap-6">
+            <div className="w-full md:w-1/3 flex flex-1 flex-col items-center">
               <Image
                 src={classData?.photo ?? '/defaultClass.jpg'}
                 alt="Class Photo"
@@ -245,9 +243,7 @@ const SingleClassPage = async ({ params }: any) => {
                 className="w-40 h-40 rounded-md object-cover mb-4"
               />
             </div>
-
-            {/* Right Section (Class Details) */}
-            <div className="w-2/3 flex flex-col justify-between gap-6">
+            <div className="w-full md:w-2/3 flex flex-1 flex-col justify-between gap-6">
               <h1 className="text-2xl flex gap-2 font-semibold text-gray-800">
                 {classData?.name}{' '}
                 {role === 'admin' && (
@@ -260,13 +256,15 @@ const SingleClassPage = async ({ params }: any) => {
                   </>
                 )}
               </h1>
-
-              <p className="text-sm text-gray-600">
-                Capacity: {classData?.capacity}
-                <br />
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint,
-                quod?
+              {/*  description of class */}
+              <p className="text-gray-500">
+                Chào mừng đến với lớp học của Miss Thùy Class
               </p>
+              {/* Additional Information (if needed) */}
+              {/* Uncomment if you want to add more info */}
+              {/* <div className="flex items-center justify-between gap-4 text-xs font-medium text-gray-500">
+
+
 
               {/* Additional Information (if needed) */}
               {/* Uncomment if you want to add more info */}
@@ -295,10 +293,8 @@ const SingleClassPage = async ({ params }: any) => {
             ))}
           </div>
         </div>
-        <div className="bg-white p-4 rounded-md flex-1 m-4">
-          <h1 className="hidden md:block text-lg font-semibold mb-2">
-            All Posts
-          </h1>
+        <div className="bg-white p-4 rounded-md flex-1 my-4">
+          <h1 className="text-lg font-semibold mb-2">All Posts</h1>
           <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
             <TableSearch />
             <div className="flex items-center gap-4 self-end">

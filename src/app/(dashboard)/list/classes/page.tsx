@@ -18,6 +18,7 @@ type Class = {
   grade: Grade;
   supervisor: string;
   time: string;
+  photo?: string;
   students: any[];
 };
 
@@ -121,9 +122,13 @@ const ClassListPage = async ({ searchParams }: Props) => {
 
       {/* Class Name with Grade Avatar */}
       <td className="flex items-center gap-4 p-4">
-        <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-bold">
-          {item.grade.id}
-        </div>
+        <Image
+          src={item?.photo ?? '/defaultClass.jpg'}
+          alt="Class Avatar"
+          width={40}
+          height={40}
+          className="hidden md:block rounded-full object-cover"
+        />
         <span className="text-gray-800 font-medium">{item.name}</span>
       </td>
 
