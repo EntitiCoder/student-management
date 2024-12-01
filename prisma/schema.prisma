@@ -80,6 +80,7 @@ model Class {
   time          String        @db.VarChar(255)
   supervisorId  String?
   gradeId       Int
+  photo         String?        @db.VarChar(255) // New column for the photo
   announcements Announcement[]
   grade         Grade          @relation(fields: [gradeId], references: [id])
   supervisor    Teacher?       @relation(fields: [supervisorId], references: [id])
