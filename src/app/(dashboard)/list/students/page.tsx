@@ -125,37 +125,45 @@ const StudentListPage = async ({ searchParams, params }: Props) => {
   const renderRow = (item: StudentList, index: number) => (
     <tr
       key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
+      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight transition-all duration-300"
     >
-      <td className="py-4">{renderNo(index, p)}</td>
-
+      {/* Student No */}
+      <td className="py-4 text-center">{renderNo(index, p)}</td>
+      {/* Student Photo & Info */}
       <td className="flex items-center gap-4 py-4">
         <Image
           src={item.photo}
           alt=""
           width={40}
           height={40}
-          className="xl:block w-10 h-10 rounded-full object-cover"
+          className="w-10 h-10 rounded-full object-cover border-2 border-lamaSky shadow-md"
         />
         <div className="flex flex-col">
-          <h3 className="font-semibold">
+          <h3 className="font-semibold text-lg text-gray-800">
             {item.name} {item.surname}
           </h3>
           <p className="text-xs text-gray-500">{item?.class.name}</p>
         </div>
       </td>
-      <td className="hidden md:table-cell">{item.id}</td>
-      <td className="hidden md:table-cell">{item.gradeId}</td>
-      <td className="hidden md:table-cell">{item.phone}</td>
-      <td className="hidden md:table-cell">{formateDayOnly(item.birthday)}</td>
-      <td className="hidden md:table-cell">{item.address}</td>
-      <td>
-        <div className="flex items-center gap-2">
+
+      {/* Additional Info */}
+      <td className="hidden md:table-cell ">{item.id}</td>
+      <td className="hidden md:table-cell text-center">{item.gradeId}</td>
+      <td className="hidden md:table-cell text-center">{item.phone}</td>
+      <td className="hidden md:table-cell text-center">
+        {formateDayOnly(item.birthday)}
+      </td>
+      <td className="hidden md:table-cell text-center">{item.address}</td>
+
+      {/* Actions */}
+      <td className="text-center">
+        <div className="flex items-center justify-center gap-3">
           <Link href={`/list/students/${item.id}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
+            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaSky hover:bg-lamaPurple transition-all duration-200 shadow-md">
               <ViewIcon />
             </button>
           </Link>
+
           {role === 'admin' && (
             // <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
             //   <Image src="/delete.png" alt="" width={16} height={16} />

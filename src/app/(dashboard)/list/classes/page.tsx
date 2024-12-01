@@ -114,26 +114,64 @@ const ClassListPage = async ({ searchParams }: Props) => {
   const renderRow = (item: Class, index: number) => (
     <tr
       key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight "
+      className="border-b border-gray-200 even:bg-gray-50 text-sm hover:bg-purple-100 transition-colors duration-150"
     >
-      <td className="gap-4 p-4">{index + 1}</td>
-      <td className="flex items-center gap-4 p-4">{item.name}</td>
-      <td className="flex items-center gap-4 p-4 hidden md:table-cell">
-        {item.capacity}
+      {/* Serial Number */}
+      <td className="gap-4 p-4 text-gray-700 font-semibold">{index + 1}</td>
+
+      {/* Class Name with Grade Avatar */}
+      <td className="flex items-center gap-4 p-4">
+        <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-bold">
+          {item.grade.id}
+        </div>
+        <span className="text-gray-800 font-medium">{item.name}</span>
       </td>
-      <td className="flex items-center gap-4 p-4 hidden md:table-cell">
-        {item.grade.id}
+
+      {/* Capacity with Tag */}
+      <td className="p-4 hidden md:table-cell">
+        <span
+          className={`px-2 py-1 rounded-full text-sm ${
+            item.capacity > 50
+              ? 'bg-green-100 text-green-700'
+              : 'bg-red-100 text-red-700'
+          }`}
+        >
+          {item.capacity}
+        </span>
       </td>
-      <td className="flex items-center gap-4 p-4 hidden md:table-cell">
-        {item.students.length}
+
+      {/* Grade */}
+      <td className="p-4 hidden md:table-cell">
+        <span className="px-2 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-medium">
+          Grade {item.grade.id}
+        </span>
       </td>
-      <td className="flex items-center gap-4 p-4 hidden md:table-cell">
-        {item.time}
+
+      {/* Total Students */}
+      <td className="p-4 hidden md:table-cell">
+        <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <div className="w-6 h-6 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-700 font-semibold">
+            {item.students.length}
+          </div>
+          {item.students.length === 1 ? 'Student' : 'Students'}
+        </span>
       </td>
+
+      {/* Time */}
+      <td className="p-4 hidden md:table-cell">
+        <span className="px-2 py-1 rounded-md bg-gray-200 text-gray-700 text-sm font-medium">
+          {item.time}
+        </span>
+      </td>
+
+      {/* Actions */}
       <td className="">
         <div className="flex items-center gap-2">
           <Link href={`/list/classes/${item.id}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-[#fff]">
+            <button
+              className="w-7 h-7 flex items-center justify-center rounded-full bg-white shadow hover:bg-gray-100"
+              title="View Details"
+            >
               <ViewIcon />
             </button>
           </Link>
