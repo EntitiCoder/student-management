@@ -60,6 +60,7 @@ const columns = [
   {
     header: 'Birthday',
     accessor: 'birthday',
+    className: 'hidden lg:table-cell',
   },
   {
     header: 'Address',
