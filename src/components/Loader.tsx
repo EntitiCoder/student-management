@@ -1,4 +1,4 @@
-const Loading = () => {
+const Loader = () => {
   return (
     <div className="grid h-screen my-auto w-full place-items-center overflow-x-scroll rounded-lg  lg:overflow-visible">
       <svg
@@ -29,4 +29,4 @@ const Loading = () => {
   );
 };
 
-export default Loading;
+export default Loader;
