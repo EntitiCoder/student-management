@@ -4,9 +4,8 @@ import Table from '@/components/Table';
 import TableSearch from '@/components/TableSearch';
 import { formateDayOnly } from '@/lib/dateUtils';
 import { renderNo } from '@/lib/numUtils';
-import prisma from '@/lib/prisma';
-import { ITEM_PER_PAGE } from '@/lib/settings';
-import { currentUser } from '@clerk/nextjs/server';
+import { getStudents } from '@/lib/queries';
+import { auth } from '@clerk/nextjs/server';
 import { Prisma, Student } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -74,54 +73,17 @@ const columns = [
 ];
 
 const StudentListPage = async ({ searchParams, params }: Props) => {
-  const user = await currentUser();
-  const role = user?.publicMetadata.role as string;
+  const { userId, sessionClaims } = await auth();
+  const role = (sessionClaims?.meta as { role?: string })?.role;
 
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
 
   const { id: classId } = params;
-  console.log('🚀 ~ file: page.tsx:77 ~ StudentListPage ~ classId:', classId);
-
   const query: Prisma.StudentWhereInput = {};
 
-  if (queryParams) {
-    for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
-        switch (key) {
-          // case 'teacherId':
-          //   query.class = {
-          //     lessons: {
-          //       some: {
-          //         teacherId: value,
-          //       },
-          //     },
-          //   };
-          //   break;
-          case 'classId':
-            query.classId = Number(value);
-            break;
-          // case 'search':
-          //   query.name = { contains: value, mode: 'insensitive' };
-          //   break;
-          default:
-            break;
-        }
-      }
-    }
-  }
-
-  const [data, count] = await prisma.$transaction([
-    prisma.student.findMany({
-      where: query,
-      include: {
-        class: true,
-      },
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1),
-    }),
-    prisma.student.count({ where: query }),
-  ]);
+  // Call the query function
+  const { data, count } = await getStudents(queryParams, p);
 
   const renderRow = (item: StudentList, index: number) => (
     <tr

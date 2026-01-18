@@ -14,6 +14,8 @@ interface Student {
   gradeId: number;
   birthday: Date;
   photo: string;
+  lastSignInAt: Date;
+  imageUrl: string;
   grade: {
     id: number;
     level: number;

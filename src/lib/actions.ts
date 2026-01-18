@@ -119,12 +119,29 @@ export const updateClass = async (
   currentState: CurrentState,
   data: ClassSchema
 ) => {
+  console.log('🚀 ~ file: actions.ts:122 ~ data:', data);
+  let media: FileUpload[] = [];
+  // const file = data.photo as File | null;
+
+  // if (file && file.size > 0) {
+  //   const { url, type, fileName } = await saveFile(file);
+  //   media = [
+  //     {
+  //       url,
+  //       type,
+  //       fileName,
+  //     },
+  //   ];
+  // }
   try {
     await prisma.class.update({
       where: {
         id: data.id,
       },
-      data,
+      data: {
+        ...data,
+        // photo: media.length > 0 ? media?.[0]?.url : undefined,
+      },
     });
     console.log('success update class');
     return { success: true, error: false };
@@ -241,9 +258,9 @@ export async function updatePost(formData: FormData) {
         media:
           media.length > 0
             ? {
-                deleteMany: {},
-                create: media,
-              }
+              deleteMany: {},
+              create: media,
+            }
             : undefined,
         class: {
           connect: {
