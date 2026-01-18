@@ -3,7 +3,7 @@ import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
 import TableSearch from '@/components/TableSearch';
 import { getClasses } from '@/lib/queries';
-import { auth } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 import { Prisma } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -18,7 +18,9 @@ type Class = {
   supervisor: string;
   time: string;
   photo?: string;
-  students: any[];
+  _count: {
+    students: number;
+  };
 };
 
 interface Props {
@@ -63,8 +65,8 @@ const columns = [
 ];
 
 const ClassListPage = async ({ searchParams }: Props) => {
-  const { userId, sessionClaims } = await auth();
-  const role = (sessionClaims?.meta as { role?: string })?.role;
+  const user = await currentUser();
+  const role = user?.publicMetadata.role as string;
   if (role === 'student') {
     return notFound();
   }
@@ -74,7 +76,14 @@ const ClassListPage = async ({ searchParams }: Props) => {
   // URL PARAMS CONDITION
 
   const query: Prisma.ClassWhereInput = {};
+
+  // Measure query execution time
+  const startTime = performance.now();
   const { data, count } = await getClasses(queryParams, p);
+  const endTime = performance.now();
+  const queryTime = (endTime - startTime).toFixed(2);
+
+  console.log(`⏱️ getClasses query took: ${queryTime}ms`);
 
   const renderRow = (item: Class, index: number) => (
     <tr
@@ -99,11 +108,10 @@ const ClassListPage = async ({ searchParams }: Props) => {
       {/* Capacity with Tag */}
       <td className="p-4 hidden md:table-cell">
         <span
-          className={`px-2 py-1 rounded-full text-sm ${
-            item.capacity > 50
-              ? 'bg-green-100 text-green-700'
-              : 'bg-red-100 text-red-700'
-          }`}
+          className={`px-2 py-1 rounded-full text-sm ${item.capacity > 50
+            ? 'bg-green-100 text-green-700'
+            : 'bg-red-100 text-red-700'
+            }`}
         >
           {item.capacity}
         </span>
@@ -120,9 +128,9 @@ const ClassListPage = async ({ searchParams }: Props) => {
       <td className="p-4 hidden md:table-cell">
         <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
           <div className="w-6 h-6 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-700 font-semibold">
-            {item.students.length}
+            {item._count.students}
           </div>
-          {item.students.length === 1 ? 'Student' : 'Students'}
+          {item._count.students === 1 ? 'Student' : 'Students'}
         </span>
       </td>
 

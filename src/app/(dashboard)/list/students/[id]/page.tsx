@@ -161,7 +161,7 @@ const SingleStudentPage = async ({ params }: any) => {
                   alt="Class Avatar"
                   width={40}
                   height={40}
-                  // className="w-40 h-40 rounded-full object-cover"
+                // className="w-40 h-40 rounded-full object-cover"
                 />
               )}
               {student?.class?.name}

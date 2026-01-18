@@ -1,21 +1,21 @@
 import prisma from '@/lib/prisma';
-import { auth } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 import FormModal from './FormModal';
 
 export type FormContainerProps = {
   table:
-    | 'teacher'
-    | 'student'
-    | 'parent'
-    | 'subject'
-    | 'class'
-    | 'lesson'
-    | 'exam'
-    | 'assignment'
-    | 'result'
-    | 'attendance'
-    | 'event'
-    | 'announcement';
+  | 'teacher'
+  | 'student'
+  | 'parent'
+  | 'subject'
+  | 'class'
+  | 'lesson'
+  | 'exam'
+  | 'assignment'
+  | 'result'
+  | 'attendance'
+  | 'event'
+  | 'announcement';
   type: 'create' | 'update' | 'delete';
   data?: any;
   id?: number | string;
@@ -24,9 +24,9 @@ export type FormContainerProps = {
 const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
   let relatedData = {};
 
-  const { userId, sessionClaims } = await auth();
-  const role = (sessionClaims?.metadata as { role?: string })?.role;
-  const currentUserId = userId;
+  const user = await currentUser();
+  const role = user?.publicMetadata.role as string;
+  const currentUserId = user?.id;
 
   if (type !== 'delete') {
     switch (table) {
