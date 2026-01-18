@@ -5,7 +5,7 @@ import TableSearch from '@/components/TableSearch';
 import { formateDayOnly } from '@/lib/dateUtils';
 import { renderNo } from '@/lib/numUtils';
 import { getStudents } from '@/lib/queries';
-import { auth } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 import { Prisma, Student } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -73,8 +73,8 @@ const columns = [
 ];
 
 const StudentListPage = async ({ searchParams, params }: Props) => {
-  const { userId, sessionClaims } = await auth();
-  const role = (sessionClaims?.meta as { role?: string })?.role;
+  const user = await currentUser();
+  const role = user?.publicMetadata.role as string;
 
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
@@ -82,8 +82,13 @@ const StudentListPage = async ({ searchParams, params }: Props) => {
   const { id: classId } = params;
   const query: Prisma.StudentWhereInput = {};
 
-  // Call the query function
+  // Measure query execution time
+  const startTime = performance.now();
   const { data, count } = await getStudents(queryParams, p);
+  const endTime = performance.now();
+  const queryTime = (endTime - startTime).toFixed(2);
+
+  console.log(`⏱️ getStudents query took: ${queryTime}ms`);
 
   const renderRow = (item: StudentList, index: number) => (
     <tr

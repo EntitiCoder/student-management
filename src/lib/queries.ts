@@ -33,17 +33,25 @@ export const getStudents = async (
     }
   }
 
+  const startTime = performance.now();
   const [data, count] = await prisma.$transaction([
     prisma.student.findMany({
       where: query,
       include: {
-        class: true,
+        class: {
+          select: {
+            name: true,
+            time: true,
+          },
+        },
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (page - 1),
     }),
     prisma.student.count({ where: query }),
   ]);
+  const endTime = performance.now();
+  console.log(`🗄️ Database query (getStudents) took: ${(endTime - startTime).toFixed(2)}ms`);
 
   return { data, count };
 };
@@ -72,6 +80,8 @@ export const getSingleStudent = async (studentId: string) => {
 };
 
 export const getClasses = async (query: any, page: number) => {
+  const startTime = performance.now();
+
   const [data, count] = await prisma.$transaction([
     prisma.class.findMany({
       where: query,
@@ -81,7 +91,11 @@ export const getClasses = async (query: any, page: number) => {
             id: true,
           },
         },
-        students: true,
+        _count: {
+          select: {
+            students: true,
+          },
+        },
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (page - 1),
@@ -89,5 +103,56 @@ export const getClasses = async (query: any, page: number) => {
     prisma.class.count({ where: query }),
   ]);
 
+  const endTime = performance.now();
+  console.log(`🗄️ Database query (getClasses) took: ${(endTime - startTime).toFixed(2)}ms`);
+
   return { data, count };
+};
+
+export const getSingleClass = async (classId: number) => {
+  const startTime = performance.now();
+
+  const classData = await prisma.class?.findUnique({
+    where: {
+      id: classId,
+    },
+    include: {
+      grade: {
+        select: {
+          id: true,
+        },
+      },
+      posts: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          media: {
+            select: {
+              url: true,
+              fileName: true,
+            },
+          },
+        },
+      },
+      _count: {
+        select: {
+          students: true,
+          posts: true,
+        },
+      },
+    },
+  });
+
+  const endTime = performance.now();
+  console.log(`🗄️ Database query (getSingleClass) took: ${(endTime - startTime).toFixed(2)}ms`);
+
+  return classData;
+};
+
+export const getStudentClassId = async (studentId: string) => {
+  return await prisma.student.findUnique({
+    where: { id: studentId },
+    select: { classId: true },
+  });
 };

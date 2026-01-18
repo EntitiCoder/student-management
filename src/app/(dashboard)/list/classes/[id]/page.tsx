@@ -6,6 +6,7 @@ import FormPostContainer from '@/components/FormPostContainer';
 import Table from '@/components/Table';
 import TableSearch from '@/components/TableSearch';
 import { formatDateTime } from '@/lib/dateUtils';
+import { getSingleClass, getStudentClassId } from '@/lib/queries';
 import prisma from '@/lib/prisma';
 import { currentUser } from '@clerk/nextjs/server';
 import Image from 'next/image';
@@ -55,39 +56,11 @@ const SingleClassPage = async ({ params }: any) => {
   const user = await currentUser();
   const role = user?.publicMetadata.role as string;
   const classId = Number(params.id);
-  // By ID
-  const classPromise = prisma.class?.findUnique({
-    where: {
-      id: classId,
-    },
-    include: {
-      grade: true,
-      posts: {
-        orderBy: {
-          createdAt: 'desc',
-        },
-        include: {
-          media: {
-            select: {
-              url: true,
-              fileName: true,
-              // type: true,
-            },
-          },
-        },
-      },
-      students: true,
-    },
-  });
 
-  const studentPromise = prisma.student.findUnique({
-    where: { id: user?.id },
-    select: { classId: true },
-  });
-
+  // Use centralized query functions
   const [classData, studentData] = await Promise.all([
-    classPromise,
-    studentPromise,
+    getSingleClass(classId),
+    user?.id ? getStudentClassId(user.id) : null,
   ]);
 
   if (
@@ -177,7 +150,7 @@ const SingleClassPage = async ({ params }: any) => {
 
   const cardInfoList = [
     {
-      data: classData?.students?.length,
+      data: classData?._count?.students,
       title: 'Total Students',
       icon: (
         <Image
@@ -204,7 +177,7 @@ const SingleClassPage = async ({ params }: any) => {
       ),
     },
     {
-      data: classData?.posts?.length,
+      data: classData?._count?.posts,
       title: 'Posts',
       icon: (
         <Image
