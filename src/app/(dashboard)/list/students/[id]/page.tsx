@@ -1,34 +1,17 @@
 import CardInfo from '@/components/CardInfo';
 import LastActive from '@/components/LastActive';
-import prisma from '@/lib/prisma';
-import { currentUser } from '@clerk/nextjs/server';
+import { getSingleStudent } from '@/lib/queries';
 // import BigCalendar from '@/components/BigCalender';
 // import Performance from '@/components/Performance';
 import Image from 'next/image';
 import Link from 'next/link';
 
 const SingleStudentPage = async ({ params }: any) => {
-  const handleEditStudent: any = () => {
-    console.log('Edit Student');
-  };
-  const user = await currentUser();
-  const role = user?.publicMetadata.role as string;
   const studentId = params.id;
   // By ID
-  const student = await prisma.student?.findUnique({
-    where: {
-      id: studentId,
-    },
-    include: {
-      // grade: true,
-      class: {
-        include: {
-          posts: true,
-        },
-      },
-    },
-  });
 
+  const student = await getSingleStudent(studentId);
+  console.log('🚀 ~ file: page.tsx:14 ~ SingleStudentPage ~ student:', student);
   const cardInfoList = [
     {
       data: student?.class?.name,
@@ -96,7 +79,7 @@ const SingleStudentPage = async ({ params }: any) => {
             <div className="bg-lamaSky rounded-md flex-1 flex gap-4">
               <div className="w-1/3">
                 <Image
-                  src={student?.photo as string}
+                  src={student?.imageUrl}
                   alt=""
                   width={144}
                   height={144}
@@ -112,7 +95,7 @@ const SingleStudentPage = async ({ params }: any) => {
                   )}
                 </div> */}
                 </h1>
-                <LastActive time={user?.lastSignInAt} />
+                <LastActive time={student?.lastSignInAt} />
                 {/* <button
                 className="py-2 px-4 rounded-md bg-slate-200 text-xs font-semibold"
                 onClick={handleEditStudent}

@@ -3,7 +3,9 @@ import dayjs from 'dayjs';
 
 // Function to format timestamp
 const formatLastActiveAt = (timestamp: number | null | undefined) => {
-  return dayjs(timestamp).format('MMMM DD, YYYY [at] hh:mm:ss A');
+  if (timestamp)
+    return dayjs(timestamp).format('MMMM DD, YYYY [at] hh:mm:ss A');
+  return 'Never log in';
 };
 
 // Last Active Component

@@ -56,7 +56,7 @@ const SingleClassPage = async ({ params }: any) => {
   const role = user?.publicMetadata.role as string;
   const classId = Number(params.id);
   // By ID
-  const classData = await prisma.class?.findUnique({
+  const classPromise = prisma.class?.findUnique({
     where: {
       id: classId,
     },
@@ -80,10 +80,15 @@ const SingleClassPage = async ({ params }: any) => {
     },
   });
 
-  const studentData = await prisma.student.findUnique({
+  const studentPromise = prisma.student.findUnique({
     where: { id: user?.id },
     select: { classId: true },
   });
+
+  const [classData, studentData] = await Promise.all([
+    classPromise,
+    studentPromise,
+  ]);
 
   if (
     role == 'student' &&

@@ -2,9 +2,8 @@ import FormContainer from '@/components/FormContainer';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
 import TableSearch from '@/components/TableSearch';
-import prisma from '@/lib/prisma';
-import { ITEM_PER_PAGE } from '@/lib/settings';
-import { currentUser } from '@clerk/nextjs/server';
+import { getClasses } from '@/lib/queries';
+import { auth } from '@clerk/nextjs/server';
 import { Prisma } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -28,45 +27,44 @@ interface Props {
   };
 }
 
+const columns = [
+  {
+    header: 'No',
+    accessor: 'no',
+  },
+  {
+    header: 'Class Name',
+    accessor: 'name',
+  },
+  {
+    header: 'Capacity',
+    accessor: 'capacity',
+    className: 'hidden md:table-cell',
+  },
+  {
+    header: 'Grade',
+    accessor: 'grade',
+    className: 'hidden md:table-cell',
+  },
+  {
+    header: 'Total Students',
+    accessor: 'students',
+    className: 'hidden md:table-cell',
+  },
+  {
+    header: 'Time',
+    accessor: 'time',
+    className: 'hidden md:table-cell',
+  },
+  {
+    header: 'Actions',
+    accessor: 'action',
+  },
+];
+
 const ClassListPage = async ({ searchParams }: Props) => {
-  const user = await currentUser();
-  const role = user?.publicMetadata.role as string;
-
-  const columns = [
-    {
-      header: 'No',
-      accessor: 'no',
-    },
-    {
-      header: 'Class Name',
-      accessor: 'name',
-    },
-    {
-      header: 'Capacity',
-      accessor: 'capacity',
-      className: 'hidden md:table-cell',
-    },
-    {
-      header: 'Grade',
-      accessor: 'grade',
-      className: 'hidden md:table-cell',
-    },
-    {
-      header: 'Total Students',
-      accessor: 'students',
-      className: 'hidden md:table-cell',
-    },
-    {
-      header: 'Time',
-      accessor: 'time',
-      className: 'hidden md:table-cell',
-    },
-    {
-      header: 'Actions',
-      accessor: 'action',
-    },
-  ];
-
+  const { userId, sessionClaims } = await auth();
+  const role = (sessionClaims?.meta as { role?: string })?.role;
   if (role === 'student') {
     return notFound();
   }
@@ -76,41 +74,7 @@ const ClassListPage = async ({ searchParams }: Props) => {
   // URL PARAMS CONDITION
 
   const query: Prisma.ClassWhereInput = {};
-
-  // if (queryParams) {
-  //   for (const [key, value] of Object.entries(queryParams)) {
-  //     if (value !== undefined) {
-  //       switch (key) {
-  //         case "supervisorId":
-  //           query.supervisorId = value;
-  //           break;
-  //         case "search":
-  //           query.name = { contains: value, mode: "insensitive" };
-  //           break;
-  //         default:
-  //           break;
-  //       }
-  //     }
-  //   }
-  // }
-
-  const [data, count] = await prisma.$transaction([
-    prisma.class.findMany({
-      where: query,
-      include: {
-        // supervisor: true,
-        grade: {
-          select: {
-            id: true,
-          },
-        },
-        students: true,
-      },
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1),
-    }),
-    prisma.class.count({ where: query }),
-  ]);
+  const { data, count } = await getClasses(queryParams, p);
 
   const renderRow = (item: Class, index: number) => (
     <tr
