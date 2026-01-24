@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { ClassSchema, StudentSchema } from './formValidationSchemas';
 import prisma from './prisma';
+import { Prisma } from '@prisma/client';
 
 // Require the cloudinary library
 
@@ -191,6 +192,27 @@ export async function createPost(formData: FormData) {
     ];
   }
 
+  // Extract type and dueAt
+  const postTypeStr = formData.get('type') as string || 'ANNOUNCEMENT';
+  const postType = postTypeStr as 'ANNOUNCEMENT' | 'VOCAB' | 'HOMEWORK';
+  const dueAtString = formData.get('dueAt') as string | null;
+
+  // Validate: HOMEWORK requires dueAt
+  if (postType === 'HOMEWORK' && (!dueAtString || dueAtString.trim() === '')) {
+    return { success: false, error: true, message: 'Deadline is required for homework posts' };
+  }
+
+  // Parse dueAt
+  let dueAt: Date | undefined = undefined;
+  if (dueAtString && dueAtString.trim() !== '') {
+    dueAt = new Date(dueAtString);
+
+    // Validate dueAt is in the future (for new homework)
+    if (postType === 'HOMEWORK' && dueAt <= new Date()) {
+      return { success: false, error: true, message: 'Deadline must be in the future' };
+    }
+  }
+
   // Parse the form data
   const { title, description, classId } = FormSchema.parse({
     classId: Number(formData.get('classId')),
@@ -200,19 +222,23 @@ export async function createPost(formData: FormData) {
   });
 
   try {
-    await prisma.post.create({
-      data: {
-        title: title,
-        description: description,
-        media: {
-          create: media.length > 0 ? media : undefined,
-        },
-        class: {
-          connect: {
-            id: classId,
-          },
-        },
+    const postData: Prisma.PostCreateInput = {
+      title: title,
+      description: description,
+      type: postType,
+      dueAt: dueAt,
+      class: {
+        connect: { id: classId },
       },
+      ...(media.length > 0 && {
+        media: {
+          create: media,
+        },
+      }),
+    };
+
+    await prisma.post.create({
+      data: postData,
     });
     console.log('success');
     revalidatePath(`/list/classes/${classId}`);
@@ -239,6 +265,24 @@ export async function updatePost(formData: FormData) {
       },
     ];
   }
+
+  // Extract type and dueAt
+  const postType = formData.get('type') as string || 'ANNOUNCEMENT';
+  const dueAtString = formData.get('dueAt') as string | null;
+
+  // Validate: HOMEWORK requires dueAt
+  if (postType === 'HOMEWORK' && (!dueAtString || dueAtString.trim() === '')) {
+    return { success: false, error: true, message: 'Deadline is required for homework posts' };
+  }
+
+  // Parse dueAt
+  let dueAt: Date | null | undefined = undefined;
+  if (postType !== 'HOMEWORK') {
+    dueAt = null; // Clear deadline for non-homework posts
+  } else if (dueAtString && dueAtString.trim() !== '') {
+    dueAt = new Date(dueAtString);
+  }
+
   // Parse the form data
   const { title, description, classId } = FormSchema.parse({
     classId: Number(formData.get('classId')),
@@ -255,6 +299,8 @@ export async function updatePost(formData: FormData) {
       data: {
         title: title,
         description: description,
+        type: postType as 'ANNOUNCEMENT' | 'VOCAB' | 'HOMEWORK',
+        dueAt: dueAt,
         media:
           media.length > 0
             ? {
@@ -326,3 +372,180 @@ async function saveFile(file: File) {
   const { url } = result;
   return { url, type: file.type, fileName: file.name };
 }
+
+// Post Submission Actions
+
+export async function createSubmission(formData: FormData) {
+  try {
+    const studentId = formData.get('studentId') as string;
+    const postId = Number(formData.get('postId'));
+    const files = formData.getAll('files') as File[];
+
+    if (!studentId || !postId) {
+      return { success: false, error: true, message: 'Missing required fields' };
+    }
+
+    if (!files || files.length === 0 || files[0].size === 0) {
+      return { success: false, error: true, message: 'At least one file is required' };
+    }
+
+    // Check if post has a deadline (homework) and if it's passed
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: { type: true, dueAt: true, classId: true },
+    });
+
+    if (post?.type === 'HOMEWORK' && post.dueAt && new Date() > post.dueAt) {
+      return {
+        success: false,
+        error: true,
+        message: 'Deadline has passed. Submissions are no longer accepted.'
+      };
+    }
+
+    // Upload files to Cloudinary
+    const uploadedFiles = await Promise.all(
+      files.filter(f => f.size > 0).map(async (file) => {
+        const { url, fileName } = await saveFile(file);
+        return { url, fileName };
+      })
+    );
+
+    // Use upsert to create or update submission
+    const submission = await prisma.postSubmission.upsert({
+      where: {
+        studentId_postId: {
+          studentId,
+          postId,
+        },
+      },
+      update: {
+        status: 'PENDING',
+        submittedAt: new Date(),
+        reviewedAt: null,
+        reviewedById: null,
+        rejectionReason: null,
+        teacherNote: null,
+        files: {
+          deleteMany: {}, // Delete old files
+          create: uploadedFiles,
+        },
+      },
+      create: {
+        studentId,
+        postId,
+        status: 'PENDING',
+        files: {
+          create: uploadedFiles,
+        },
+      },
+    });
+
+    if (post) {
+      revalidatePath(`/list/classes/${post.classId}`);
+    }
+
+    console.log('✅ Submission created/updated successfully');
+    return { success: true, error: false };
+  } catch (err) {
+    console.error('❌ Error creating submission:', err);
+    return { success: false, error: true, message: 'Failed to create submission' };
+  }
+}
+
+export async function approveSubmission(
+  submissionId: number,
+  teacherId: string,
+  teacherNote?: string,
+  finalPoints?: number
+) {
+  try {
+    // Verify teacher exists
+    const teacher = await prisma.teacher.findUnique({
+      where: { id: teacherId },
+    });
+
+    if (!teacher) {
+      console.error('❌ Teacher not found:', teacherId);
+      return { success: false, error: true, message: 'Teacher not found' };
+    }
+
+    const submission = await prisma.postSubmission.update({
+      where: {
+        id: submissionId,
+      },
+      data: {
+        status: 'APPROVED',
+        reviewedAt: new Date(),
+        reviewedById: teacherId,
+        teacherNote: teacherNote || null,
+        finalPoints: finalPoints || null,
+      },
+      include: {
+        post: {
+          select: {
+            classId: true,
+          },
+        },
+      },
+    });
+
+    revalidatePath(`/list/classes/${submission.post.classId}`);
+    console.log('✅ Submission approved successfully');
+    return { success: true, error: false };
+  } catch (err) {
+    console.error('❌ Error approving submission:', err);
+    return { success: false, error: true, message: 'Failed to approve submission' };
+  }
+}
+
+export async function rejectSubmission(
+  submissionId: number,
+  teacherId: string,
+  rejectionReason: string,
+  teacherNote?: string
+) {
+  try {
+    if (!rejectionReason || rejectionReason.trim() === '') {
+      return { success: false, error: true, message: 'Rejection reason is required' };
+    }
+
+    // Verify teacher exists
+    const teacher = await prisma.teacher.findUnique({
+      where: { id: teacherId },
+    });
+
+    if (!teacher) {
+      console.error('❌ Teacher not found:', teacherId);
+      return { success: false, error: true, message: 'Teacher not found' };
+    }
+
+    const submission = await prisma.postSubmission.update({
+      where: {
+        id: submissionId,
+      },
+      data: {
+        status: 'REJECTED',
+        reviewedAt: new Date(),
+        reviewedById: teacherId,
+        rejectionReason,
+        teacherNote: teacherNote || null,
+      },
+      include: {
+        post: {
+          select: {
+            classId: true,
+          },
+        },
+      },
+    });
+
+    revalidatePath(`/list/classes/${submission.post.classId}`);
+    console.log('✅ Submission rejected successfully');
+    return { success: true, error: false };
+  } catch (err) {
+    console.error('❌ Error rejecting submission:', err);
+    return { success: false, error: true, message: 'Failed to reject submission' };
+  }
+}
+

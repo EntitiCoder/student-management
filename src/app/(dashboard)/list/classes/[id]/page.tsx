@@ -3,20 +3,30 @@
 import CardInfo from '@/components/CardInfo';
 import FormContainer from '@/components/FormContainer';
 import FormPostContainer from '@/components/FormPostContainer';
+import SubmissionFormContainer from '@/components/SubmissionFormContainer';
+import SubmissionList from '@/components/SubmissionList';
 import Table from '@/components/Table';
 import TableSearch from '@/components/TableSearch';
 import { formatDateTime } from '@/lib/dateUtils';
-import { getSingleClass, getStudentClassId } from '@/lib/queries';
+import {
+  getClassStudentsWithSubmissionStatus,
+  getSingleClass,
+  getStudentClassId,
+  getStudentSubmission,
+} from '@/lib/queries';
 import prisma from '@/lib/prisma';
 import { currentUser } from '@clerk/nextjs/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { PostType } from '@prisma/client';
 
 type Post = {
   createdAt: Date;
   id: number;
   title: string;
+  type: PostType;
+  dueAt: Date;
   description: string;
   classId: number;
   media: any[];
@@ -36,6 +46,16 @@ const columns = [
   {
     header: 'Title',
     accessor: 'title',
+  },
+  {
+    header: 'Type',
+    accessor: 'type',
+    className: 'hidden md:table-cell',
+  },
+  {
+    header: 'Deadline',
+    accessor: 'dueAt',
+    className: 'hidden lg:table-cell',
   },
   {
     header: 'Description',
@@ -71,6 +91,22 @@ const SingleClassPage = async ({ params }: any) => {
     return notFound();
   }
 
+  // Fetch student submissions if user is a student
+  let studentSubmissions: Record<number, any> = {};
+  if (role === 'student' && user?.id && classData?.posts) {
+    const submissions = await Promise.all(
+      classData.posts.map(post =>
+        getStudentSubmission(post.id, user.id)
+      )
+    );
+
+    submissions.forEach((submission: any, index: number) => {
+      if (submission) {
+        studentSubmissions[classData.posts![index].id] = submission;
+      }
+    });
+  }
+
   const renderRow = (item: Post, index: number) => (
     <tr
       key={item.id}
@@ -90,6 +126,35 @@ const SingleClassPage = async ({ params }: any) => {
 
       {/* Title */}
       <td className="p-4 font-medium text-gray-800">{item.title}</td>
+
+      {/* Type */}
+      <td className="hidden md:table-cell p-4">
+        <span className={`px-2 py-1 rounded-md text-xs font-medium ${item.type === 'HOMEWORK' ? 'bg-red-100 text-red-700' :
+          item.type === 'VOCAB' ? 'bg-blue-100 text-blue-700' :
+            'bg-gray-100 text-gray-700'
+          }`}>
+          {item.type === 'HOMEWORK' ? '📝 Homework' :
+            item.type === 'VOCAB' ? '📚 Vocab' :
+              '📢 Announcement'}
+        </span>
+      </td>
+
+      {/* Deadline */}
+      <td className="hidden lg:table-cell p-4 text-sm">
+        {item.type === 'HOMEWORK' && item.dueAt ? (
+          <div className="flex flex-col">
+            <span className={`font-medium ${new Date(item.dueAt) < new Date() ? 'text-red-600' : 'text-gray-700'
+              }`}>
+              {formatDateTime(item.dueAt)}
+            </span>
+            {new Date(item.dueAt) < new Date() && (
+              <span className="text-xs text-red-500">Overdue</span>
+            )}
+          </div>
+        ) : (
+          <span className="text-gray-400">—</span>
+        )}
+      </td>
 
       {/* Description */}
       <td className="p-4">
@@ -127,20 +192,37 @@ const SingleClassPage = async ({ params }: any) => {
       {/* Actions */}
       <td className="py-4">
         <div className="flex items-center gap-2">
-          {role === 'admin' && (
+          {role === 'student' && user?.id && (
+            <SubmissionFormContainer
+              postId={item.id}
+              studentId={user.id}
+              existingSubmission={studentSubmissions[item.id] || null}
+            />
+          )}
+          {(role === 'admin' || role === 'teacher') && (
             <>
-              <FormPostContainer
-                data={item}
-                type="update"
-                id={item.id}
-                classId={classId}
-              />
-              <FormPostContainer
-                data={item}
-                type="delete"
-                id={item.id}
-                classId={classId}
-              />
+              <Link
+                href={`/list/classes/${classId}/posts/${item.id}`}
+                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 rounded-md text-sm font-medium text-blue-700 transition-colors"
+              >
+                📊 Submissions
+              </Link>
+              {role === 'admin' && (
+                <>
+                  <FormPostContainer
+                    data={item}
+                    type="update"
+                    id={item.id}
+                    classId={classId}
+                  />
+                  <FormPostContainer
+                    data={item}
+                    type="delete"
+                    id={item.id}
+                    classId={classId}
+                  />
+                </>
+              )}
             </>
           )}
         </div>

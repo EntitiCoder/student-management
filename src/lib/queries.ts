@@ -156,3 +156,112 @@ export const getStudentClassId = async (studentId: string) => {
     select: { classId: true },
   });
 };
+
+// Get all submissions for a post (for teachers/admins)
+export const getPostSubmissions = async (postId: number) => {
+  return await prisma.postSubmission.findMany({
+    where: {
+      postId,
+    },
+    include: {
+      student: {
+        select: {
+          id: true,
+          name: true,
+          surname: true,
+          username: true,
+          photo: true,
+        },
+      },
+      files: {
+        select: {
+          id: true,
+          url: true,
+          fileName: true,
+          createdAt: true,
+        },
+      },
+      reviewer: {
+        select: {
+          id: true,
+          name: true,
+          surname: true,
+        },
+      },
+    },
+    orderBy: {
+      submittedAt: 'desc',
+    },
+  });
+};
+
+// Get a specific student's submission for a post
+export const getStudentSubmission = async (
+  postId: number,
+  studentId: string
+) => {
+  return await prisma.postSubmission.findUnique({
+    where: {
+      studentId_postId: {
+        studentId,
+        postId,
+      },
+    },
+    include: {
+      files: {
+        select: {
+          id: true,
+          url: true,
+          fileName: true,
+          createdAt: true,
+        },
+      },
+      reviewer: {
+        select: {
+          id: true,
+          name: true,
+          surname: true,
+        },
+      },
+    },
+  });
+};
+
+// Get all students in a class with their submission status for a specific post
+export const getClassStudentsWithSubmissionStatus = async (
+  classId: number,
+  postId: number
+) => {
+  const students = await prisma.student.findMany({
+    where: {
+      classId,
+    },
+    select: {
+      id: true,
+      name: true,
+      surname: true,
+      username: true,
+      photo: true,
+      submissions: {
+        where: {
+          postId,
+        },
+        include: {
+          files: {
+            select: {
+              id: true,
+              url: true,
+              fileName: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      surname: 'asc',
+    },
+  });
+
+  return students;
+};
+
