@@ -125,15 +125,27 @@ model Image {
   version  String
 }
 
+
+enum PostType {
+  ANNOUNCEMENT
+  VOCAB
+  HOMEWORK
+}
+
 model Post {
   id          Int              @id @default(autoincrement())
   createdAt   DateTime         @default(now())
   title       String           @db.VarChar(255)
   description String
+  type        PostType         @default(ANNOUNCEMENT)
+  dueAt       DateTime?
   classId     Int
   media       Media[]
   submissions PostSubmission[]
   class       Class            @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@index([classId, type])
+  @@index([dueAt])
 }
 
 model Media {

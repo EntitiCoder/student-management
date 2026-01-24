@@ -2,7 +2,7 @@
 
 import { createPost, deletePost, updatePost } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 import { toast } from 'react-toastify';
 
@@ -23,6 +23,8 @@ export default function PostForm({
     success: false,
     error: false,
   });
+
+  const [postType, setPostType] = useState(data?.type || 'ANNOUNCEMENT');
 
   const router = useRouter();
 
@@ -93,6 +95,44 @@ export default function PostForm({
             defaultValue={data?.description}
           />
         </div>
+
+        <div className="mb-4">
+          <label htmlFor="type" className="mb-2 block text-sm font-medium">
+            Post Type *
+          </label>
+          <select
+            id="type"
+            name="type"
+            className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2"
+            required
+            value={postType}
+            onChange={(e) => setPostType(e.target.value)}
+          >
+            <option value="ANNOUNCEMENT">📢 Announcement</option>
+            <option value="VOCAB">📚 Vocabulary</option>
+            <option value="HOMEWORK">📝 Homework</option>
+          </select>
+        </div>
+
+        {postType === 'HOMEWORK' && (
+          <div className="mb-4">
+            <label htmlFor="dueAt" className="mb-2 block text-sm font-medium">
+              Deadline * <span className="text-xs text-gray-500">(Required for homework)</span>
+            </label>
+            <input
+              id="dueAt"
+              name="dueAt"
+              type="datetime-local"
+              className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2"
+              required={postType === 'HOMEWORK'}
+              defaultValue={data?.dueAt ? new Date(data.dueAt).toISOString().slice(0, 16) : ''}
+              min={new Date().toISOString().slice(0, 16)}
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Students won't be able to submit after this deadline
+            </p>
+          </div>
+        )}
 
         <div className="mb-4">
           <label htmlFor="media" className="mb-2 block text-sm font-medium">

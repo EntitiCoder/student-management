@@ -45,6 +45,16 @@ const columns = [
     accessor: 'title',
   },
   {
+    header: 'Type',
+    accessor: 'type',
+    className: 'hidden md:table-cell',
+  },
+  {
+    header: 'Deadline',
+    accessor: 'dueAt',
+    className: 'hidden lg:table-cell',
+  },
+  {
     header: 'Description',
     accessor: 'description',
   },
@@ -113,6 +123,35 @@ const SingleClassPage = async ({ params }: any) => {
 
       {/* Title */}
       <td className="p-4 font-medium text-gray-800">{item.title}</td>
+
+      {/* Type */}
+      <td className="hidden md:table-cell p-4">
+        <span className={`px-2 py-1 rounded-md text-xs font-medium ${item.type === 'HOMEWORK' ? 'bg-red-100 text-red-700' :
+          item.type === 'VOCAB' ? 'bg-blue-100 text-blue-700' :
+            'bg-gray-100 text-gray-700'
+          }`}>
+          {item.type === 'HOMEWORK' ? '📝 Homework' :
+            item.type === 'VOCAB' ? '📚 Vocab' :
+              '📢 Announcement'}
+        </span>
+      </td>
+
+      {/* Deadline */}
+      <td className="hidden lg:table-cell p-4 text-sm">
+        {item.type === 'HOMEWORK' && item.dueAt ? (
+          <div className="flex flex-col">
+            <span className={`font-medium ${new Date(item.dueAt) < new Date() ? 'text-red-600' : 'text-gray-700'
+              }`}>
+              {formatDateTime(item.dueAt)}
+            </span>
+            {new Date(item.dueAt) < new Date() && (
+              <span className="text-xs text-red-500">Overdue</span>
+            )}
+          </div>
+        ) : (
+          <span className="text-gray-400">—</span>
+        )}
+      </td>
 
       {/* Description */}
       <td className="p-4">
