@@ -326,3 +326,172 @@ async function saveFile(file: File) {
   const { url } = result;
   return { url, type: file.type, fileName: file.name };
 }
+
+// Post Submission Actions
+
+export async function createSubmission(formData: FormData) {
+  try {
+    const studentId = formData.get('studentId') as string;
+    const postId = Number(formData.get('postId'));
+    const files = formData.getAll('files') as File[];
+
+    if (!studentId || !postId) {
+      return { success: false, error: true, message: 'Missing required fields' };
+    }
+
+    if (!files || files.length === 0 || files[0].size === 0) {
+      return { success: false, error: true, message: 'At least one file is required' };
+    }
+
+    // Upload files to Cloudinary
+    const uploadedFiles = await Promise.all(
+      files.filter(f => f.size > 0).map(async (file) => {
+        const { url, fileName } = await saveFile(file);
+        return { url, fileName };
+      })
+    );
+
+    // Use upsert to create or update submission
+    const submission = await prisma.postSubmission.upsert({
+      where: {
+        studentId_postId: {
+          studentId,
+          postId,
+        },
+      },
+      update: {
+        status: 'PENDING',
+        submittedAt: new Date(),
+        reviewedAt: null,
+        reviewedById: null,
+        rejectionReason: null,
+        teacherNote: null,
+        files: {
+          deleteMany: {}, // Delete old files
+          create: uploadedFiles,
+        },
+      },
+      create: {
+        studentId,
+        postId,
+        status: 'PENDING',
+        files: {
+          create: uploadedFiles,
+        },
+      },
+    });
+
+    // Get the classId for revalidation
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: { classId: true },
+    });
+
+    if (post) {
+      revalidatePath(`/list/classes/${post.classId}`);
+    }
+
+    console.log('✅ Submission created/updated successfully');
+    return { success: true, error: false };
+  } catch (err) {
+    console.error('❌ Error creating submission:', err);
+    return { success: false, error: true, message: 'Failed to create submission' };
+  }
+}
+
+export async function approveSubmission(
+  submissionId: number,
+  teacherId: string,
+  teacherNote?: string,
+  finalPoints?: number
+) {
+  try {
+    // Verify teacher exists
+    const teacher = await prisma.teacher.findUnique({
+      where: { id: teacherId },
+    });
+
+    if (!teacher) {
+      console.error('❌ Teacher not found:', teacherId);
+      return { success: false, error: true, message: 'Teacher not found' };
+    }
+
+    const submission = await prisma.postSubmission.update({
+      where: {
+        id: submissionId,
+      },
+      data: {
+        status: 'APPROVED',
+        reviewedAt: new Date(),
+        reviewedById: teacherId,
+        teacherNote: teacherNote || null,
+        finalPoints: finalPoints || null,
+      },
+      include: {
+        post: {
+          select: {
+            classId: true,
+          },
+        },
+      },
+    });
+
+    revalidatePath(`/list/classes/${submission.post.classId}`);
+    console.log('✅ Submission approved successfully');
+    return { success: true, error: false };
+  } catch (err) {
+    console.error('❌ Error approving submission:', err);
+    return { success: false, error: true, message: 'Failed to approve submission' };
+  }
+}
+
+export async function rejectSubmission(
+  submissionId: number,
+  teacherId: string,
+  rejectionReason: string,
+  teacherNote?: string
+) {
+  try {
+    if (!rejectionReason || rejectionReason.trim() === '') {
+      return { success: false, error: true, message: 'Rejection reason is required' };
+    }
+
+    // Verify teacher exists
+    const teacher = await prisma.teacher.findUnique({
+      where: { id: teacherId },
+    });
+
+    if (!teacher) {
+      console.error('❌ Teacher not found:', teacherId);
+      return { success: false, error: true, message: 'Teacher not found' };
+    }
+
+    const submission = await prisma.postSubmission.update({
+      where: {
+        id: submissionId,
+      },
+      data: {
+        status: 'REJECTED',
+        reviewedAt: new Date(),
+        reviewedById: teacherId,
+        rejectionReason,
+        teacherNote: teacherNote || null,
+      },
+      include: {
+        post: {
+          select: {
+            classId: true,
+          },
+        },
+      },
+    });
+
+    revalidatePath(`/list/classes/${submission.post.classId}`);
+    console.log('✅ Submission rejected successfully');
+    return { success: true, error: false };
+  } catch (err) {
+    console.error('❌ Error rejecting submission:', err);
+    return { success: false, error: true, message: 'Failed to reject submission' };
+  }
+}
+
