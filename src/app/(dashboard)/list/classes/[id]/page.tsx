@@ -19,11 +19,14 @@ import { currentUser } from '@clerk/nextjs/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { PostType } from '@prisma/client';
 
 type Post = {
   createdAt: Date;
   id: number;
   title: string;
+  type: PostType;
+  dueAt: Date;
   description: string;
   classId: number;
   media: any[];
