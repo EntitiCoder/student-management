@@ -14,45 +14,47 @@ model Admin {
 }
 
 model Student {
-  id          String       @id
-  username    String       @unique
+  id          String           @id
+  username    String           @unique
   name        String
   surname     String
-  email       String?      @unique
-  phone       String?      @unique
+  email       String?          @unique
+  phone       String?          @unique
   address     String
   img         String?
   bloodType   String
   sex         UserSex
-  createdAt   DateTime     @default(now())
+  createdAt   DateTime         @default(now())
   // parentId    String?
   classId     Int
   gradeId     Int
   birthday    DateTime
-  photo       String       @default("/avatar.png")
+  photo       String           @default("/avatar.png")
   attendances Attendance[]
   results     Result[]
-  class       Class       @relation(fields: [classId], references: [id], onDelete: Cascade)
-  grade       Grade        @relation(fields: [gradeId], references: [id])
+  submissions PostSubmission[]
+  class       Class            @relation(fields: [classId], references: [id], onDelete: Cascade)
+  grade       Grade            @relation(fields: [gradeId], references: [id])
   // parent      Parent?       @relation(fields: [parentId], references: [id])
 }
 
 model Teacher {
-  id        String    @id
-  username  String    @unique
-  name      String
-  surname   String
-  email     String?   @unique
-  phone     String?   @unique
-  address   String
-  img       String?
-  bloodType String
-  sex       UserSex
-  createdAt DateTime  @default(now())
-  birthday  DateTime
-  classes   Class[]
-  lessons   Lesson[]
-  subjects  Subject[] @relation("SubjectToTeacher")
+  id                  String           @id
+  username            String           @unique
+  name                String
+  surname             String
+  email               String?          @unique
+  phone               String?          @unique
+  address             String
+  img                 String?
+  bloodType           String
+  sex                 UserSex
+  createdAt           DateTime         @default(now())
+  birthday            DateTime
+  classes             Class[]
+  lessons             Lesson[]
+  subjects            Subject[]        @relation("SubjectToTeacher")
+  reviewedSubmissions PostSubmission[]
 }
 
 model Parent {
@@ -123,14 +125,27 @@ model Image {
   version  String
 }
 
+
+enum PostType {
+  ANNOUNCEMENT
+  VOCAB
+  HOMEWORK
+}
+
 model Post {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  title       String   @db.VarChar(255)
+  id          Int              @id @default(autoincrement())
+  createdAt   DateTime         @default(now())
+  title       String           @db.VarChar(255)
   description String
+  type        PostType         @default(ANNOUNCEMENT)
+  dueAt       DateTime?
   classId     Int
   media       Media[]
-  class       Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  submissions PostSubmission[]
+  class       Class            @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@index([classId, type])
+  @@index([dueAt])
 }
 
 model Media {
@@ -202,6 +217,38 @@ model Announcement {
   class       Class?   @relation(fields: [classId], references: [id], onDelete: Cascade)
 }
 
+model PostSubmission {
+  id              Int                   @id @default(autoincrement())
+  studentId       String
+  postId          Int
+  status          SubmissionStatus      @default(PENDING)
+  submittedAt     DateTime              @default(now())
+  reviewedAt      DateTime?
+  reviewedById    String?
+  rejectionReason String?
+  teacherNote     String?
+  finalPoints     Int?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  student         Student               @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  post            Post                  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reviewer        Teacher?              @relation(fields: [reviewedById], references: [id])
+  files           PostSubmissionFile[]
+
+  @@unique([studentId, postId])
+  @@index([postId, status])
+  @@index([studentId, submittedAt])
+}
+
+model PostSubmissionFile {
+  id           Int            @id @default(autoincrement())
+  submissionId Int
+  url          String
+  fileName     String
+  createdAt    DateTime       @default(now())
+  submission   PostSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+}
+
 enum UserSex {
   MALE
   FEMALE
@@ -218,4 +265,10 @@ enum Day {
 enum MediaType {
   IMAGE @map("image/jpeg")
   PDF   @map("application/pdf")
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
